@@ -29,4 +29,3 @@ Semana 0 - Definicion de roles y arquitectura
   * feat: model entrando sentiment
   * fix: validacion input
   * docs: update README
-  *
