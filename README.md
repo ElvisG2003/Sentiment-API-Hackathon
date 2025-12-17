@@ -9,23 +9,23 @@ Proyecto de analisis de comentarios basados en la sastifaccion de usuarios que p
 -Base de Datos: (por definir)
 
 ##Estructura del repositorio
--/data-science
--/backend
--/docs
+- /data-science
+- /backend
+- /docs
 
 ## Estado del proyecto
 Semana 0 - Definicion de roles y arquitectura
 
 ## Reglas BASICAS del Git
--NO Pushear directo a main 
--usar Branches:
+- NO Pushear directo a main 
+- usar Branches:
 
-  *ds-cleaning
-  *ds-model
-  *backend-api
-  *web-ui
+  * ds-cleaning
+  * ds-model
+  * backend-api
+  * web-ui
   
--Commits claros:
+- Commits claros:
   * feat: model entrando sentiment
   * fix: validacion input
   * docs: update README
