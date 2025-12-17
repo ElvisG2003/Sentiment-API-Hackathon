@@ -17,15 +17,16 @@ Proyecto de analisis de comentarios basados en la sastifaccion de usuarios que p
 Semana 0 - Definicion de roles y arquitectura
 
 ## Reglas BASICAS del Git
--NO Pusher directo a main 
+-NO Pushear directo a main 
 -usar Branches:
+
   *ds-cleaning
   *ds-model
   *backend-api
   *web-ui
+  
 -Commits claros:
   * feat: model entrando sentiment
   * fix: validacion input
   * docs: update README
-  *
   *
