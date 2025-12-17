@@ -29,3 +29,15 @@ Semana 0 - Definicion de roles y arquitectura
   * feat: model entrando sentiment
   * fix: validacion input
   * docs: update README
+ 
+
+ ## Equipos y roles 
+ El equipo esta conformado por estudiantes con foco en Data Science y Back-End.
+
+| Nombre | Rol principal | Tecnologías |
+|------|--------------|-------------|
+| Elvis Guerrero | Back-End Lead | Java, Spring Boot, SQL, Git, GitHub |
+| Rafael Callata | Back-End | C#, .NET, SQL, Python |
+| Yair Andre Zuñiga Rodriguez | Back-End / Front-End | JavaScript, HTML, CSS, SQL |
+| Miguel Bareiro | Data Science | Python, Pandas, Matplotlib, scikit-learn |
+| José Mora | Data Science | Python, Pandas, SQL, Git |
