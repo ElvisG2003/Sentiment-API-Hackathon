@@ -41,3 +41,8 @@ Semana 0 - Definicion de roles y arquitectura
 | Yair Andre Zuñiga Rodriguez | Back-End / Front-End | JavaScript, HTML, CSS, SQL |
 | Miguel Bareiro | Data Science | Python, Pandas, Matplotlib, scikit-learn |
 | José Mora | Data Science | Python, Pandas, SQL, Git |
+| Aldo Gonzalez | Data Science | Python, Pandas, Git, Figma |
+| Pablo Hernandez | Por Definir | Por Definir |
+| Abel Di Bella | Por Definir | Por Definir |
+| Luis Hernandez | Por Definir | Por Definir |
+| Emmanuel Cabrera | Por Definir | Por Definir |
