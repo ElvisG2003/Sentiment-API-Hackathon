@@ -42,7 +42,7 @@ Semana 0 - Definicion de roles y arquitectura
 | Miguel Bareiro | Data Science | Python, Pandas, Matplotlib, scikit-learn |
 | José Mora | Data Science | Python, Pandas, SQL, Git |
 | Aldo Gonzalez | Data Science | Python, Pandas, Git, Figma |
-| Pablo Hernandez | Por Definir | Por Definir |
+| Pablo Hernandez | Data Science | Python, PHP, HTML, CSS, SQL |
 | Abel Di Bella | Por Definir | Por Definir |
 | Luis Hernandez | Por Definir | Por Definir |
 | Emmanuel Cabrera | Por Definir | Por Definir |
