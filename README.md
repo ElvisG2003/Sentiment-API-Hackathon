@@ -1,5 +1,5 @@
 # Sentiment-API-Hackathon
-Proyecto de analisis de comentarios basados en la sastifaccion de usuarios que permite clasificar comentarios
+Proyecto de analisis de comentarios basados en la satiSfaccion de usuarios que permite clasificar comentarios
 
 ## Arquitectura General
 -Data Science: Python + Pandas
@@ -43,6 +43,6 @@ Semana 0 - Definicion de roles y arquitectura
 | José Mora | Data Science | Python, Pandas, SQL, Git |
 | Aldo Gonzalez | Data Science | Python, Pandas, Git, Figma |
 | Pablo Hernandez | Data Science | Python, PHP, HTML, CSS, SQL |
-| Abel Di Bella | Por Definir | Por Definir |
+| Abel Di Bella | Back-End | Java, Spring Boot, SQL |
 | Luis Hernandez | Data Science | JavaScript, PHP, HTML, CSS, SQL |
 | Emmanuel Cabrera | Por Definir | Por Definir |
