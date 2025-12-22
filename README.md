@@ -1,5 +1,5 @@
 # Sentiment-API-Hackathon
-Proyecto de analisis de comentarios basados en la satiSfaccion de usuarios que permite clasificar comentarios
+Proyecto de analisis de comentarios basados en la satisfaccion de usuarios que permite clasificar comentarios
 
 ## Arquitectura General
 -Data Science: Python + Pandas
