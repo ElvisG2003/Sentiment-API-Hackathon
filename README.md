@@ -44,5 +44,5 @@ Semana 0 - Definicion de roles y arquitectura
 | Aldo Gonzalez | Data Science | Python, Pandas, Git, Figma |
 | Pablo Hernandez | Data Science | Python, PHP, HTML, CSS, SQL |
 | Rafael Callata | Back-End | C#, .NET, SQL, Python |
-| Luis Hernandez | Data Science | JavaScript, PHP, HTML, CSS, SQL |
+| Pedro Hernandez | Data Science | JavaScript, PHP, HTML, CSS, SQL |
 | Emmanuel Cabrera | Por Definir | Por Definir |
