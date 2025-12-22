@@ -37,12 +37,12 @@ Semana 0 - Definicion de roles y arquitectura
 | Nombre | Rol principal | Tecnologías |
 |------|--------------|-------------|
 | Elvis Guerrero | Back-End Lead | Java, Spring Boot, SQL, Git, GitHub |
-| Rafael Callata | Back-End | C#, .NET, SQL, Python |
+| Abel Di Bella | Back-End | Java, Spring Boot, SQL |
 | Yair Zuñiga | Back-End / Front-End | JavaScript, HTML, CSS, SQL |
 | Miguel Bareiro | Data Science | Python, Pandas, Matplotlib, scikit-learn |
 | José Mora | Data Science | Python, Pandas, SQL, Git |
 | Aldo Gonzalez | Data Science | Python, Pandas, Git, Figma |
 | Pablo Hernandez | Data Science | Python, PHP, HTML, CSS, SQL |
-| Abel Di Bella | Back-End | Java, Spring Boot, SQL |
+| Rafael Callata | Back-End | C#, .NET, SQL, Python |
 | Luis Hernandez | Data Science | JavaScript, PHP, HTML, CSS, SQL |
 | Emmanuel Cabrera | Por Definir | Por Definir |
