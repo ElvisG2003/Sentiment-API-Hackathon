@@ -5,10 +5,7 @@ import com.hackathon.sentiment_api.dto.SentimentResponse;
 import com.hackathon.sentiment_api.service.SentimentService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping({"/sentiment"})
@@ -23,5 +20,10 @@ public class SentimentController {
     public ResponseEntity<SentimentResponse> predict(@RequestBody @Valid SentimentRequest request) {
         SentimentResponse response = this.sentimentService.predict(request.getText());
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/health")
+    public ResponseEntity<String> health() {
+        return ResponseEntity.ok("OK");
     }
 }
