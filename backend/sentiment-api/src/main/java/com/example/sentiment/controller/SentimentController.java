@@ -4,6 +4,7 @@ import com.example.sentiment.dto.SentimentRequest;
 import com.example.sentiment.dto.SentimentResponse;
 import com.example.sentiment.service.SentimentService;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,9 +18,11 @@ public class SentimentController {
     }
 
     @PostMapping
-    public SentimentResponse analyze(
+    public ResponseEntity<SentimentResponse> analyze(
             @Valid @RequestBody SentimentRequest request) {
 
-        return sentimentService.analyze(request);
+        return ResponseEntity.ok(
+                sentimentService.analyze(request.getText())
+        );
     }
 }
