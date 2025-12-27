@@ -71,4 +71,4 @@ de productos digitales, servicios o plataformas.
 | Pablo Hernandez  | Data Science         | Python, PHP, HTML, CSS, SQL              |
 | Rafael Callata   | Back-End             | C#, .NET, SQL, Python                    |
 | Pedro Hernandez  | Data Science         | JavaScript, PHP, HTML, CSS, SQL          |
-| Emmanuel Cabrera | Por Definir          | Por Definir                              |
+| Emmanuel razo    | Data Science         | Python, css, html, react                 |
