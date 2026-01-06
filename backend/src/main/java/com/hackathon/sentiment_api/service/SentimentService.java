@@ -1,29 +1,30 @@
 package com.hackathon.sentiment_api.service;
 
+import com.hackathom.sentiment_api.model.SentimentModelClient;
 import com.hackathon.sentiment_api.dto.SentimentResponse;
 import org.springframework.stereotype.Service;
 
 @Service
 public class SentimentService {
 
-    public SentimentService() {
+    // Dependencia al cliente del modelo
+    private final SentimentModelClient modelClient;
+
+    // Contructor para inyectar la dependencia
+    public SentimentService(SentimentModelClient modelClient) {
+        this.modelClient = modelClient;
     }
 
+    // Metodo que hace la prediccion
     public SentimentResponse predict(String text) {
-        String loweredText = text.toLowerCase();
+        
+        // Llamamos al modelo
+        SentimentModelClient.ModelResult result = modelClient.predict(text);
 
-        if (
-                loweredText.contains("good") || loweredText.contains("happy") || loweredText.contains("great") || loweredText.contains("excellent") || loweredText.contains("love")
-        ) {
-            return new SentimentResponse("POSITIVE", 0.85);
-        }
+        // Convertimos la respuesta al formato de la API
+        String prediction = (result.label() == 1) ? "positive" : "negative";
 
-        if (
-                loweredText.contains("bad") || loweredText.contains("sad") || loweredText.contains("terrible") || loweredText.contains("awful") || loweredText.contains("stopped working")
-        ) {
-            return new SentimentResponse("NEGATIVE", 0.85);
-        }
-
-        return new SentimentResponse("NEGATIVE", 0.6);
+        // Creamos y retornamos el DTO
+        return new SentimentResponse(prediction, result.probability())
     }
 }
