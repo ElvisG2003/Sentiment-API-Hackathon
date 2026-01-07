@@ -1,6 +1,6 @@
 package com.hackathon.sentiment_api.service;
 
-import com.hackathom.sentiment_api.model.SentimentModelClient;
+import com.hackathon.sentiment_api.model.SentimentModelClient;
 import com.hackathon.sentiment_api.dto.SentimentResponse;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +25,6 @@ public class SentimentService {
         String prediction = (result.label() == 1) ? "positive" : "negative";
 
         // Creamos y retornamos el DTO
-        return new SentimentResponse(prediction, result.probability())
+        return new SentimentResponse(prediction, result.probability());
     }
 }

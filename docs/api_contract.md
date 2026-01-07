@@ -9,6 +9,6 @@ Request:
 
 Response:
 {
-  "prevision": "Negativo",
-  "probabilidad": 0.82
+  "prediction": "positive",
+  "probability": 0.82
 }

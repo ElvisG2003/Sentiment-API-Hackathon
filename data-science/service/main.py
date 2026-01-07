@@ -60,7 +60,7 @@ def load_artifacts():
         raise RuntimeError(f"Hace falta {CONFIG_PATH}. Debe existir en data-science/artifacts")
     
     # Leemos el config como texto y lo parseamos
-    cfg = json.load(open(CONFIG_PATH.read_text(encoding="utf-8")))
+    cfg = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
 
     # En el config puede venir el nombre del modelo
     model_name = cfg.get("model_path", "sentiment_pipeline_balanced.joblib")
