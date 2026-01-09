@@ -83,3 +83,21 @@ Predict (backend):
 
   * POST http://localhost:8080/sentiment
   * { "text": "The delivery was late and support did not respond" }
+```
+
+---
+
+##  Equipos y roles 
+
+| Nombre           | Rol principal        | Tecnologías                              |
+| ---------------- | -------------------- | ---------------------------------------- |
+| Elvis Guerrero   | Back-End Lead        | Java, Spring Boot, SQL, Git, GitHub      |
+| Abel Di Bella    | Back-End             | Java, Spring Boot, SQL                   |
+| Yair Zuñiga      | Back-End / Front-End | JavaScript, HTML, CSS, SQL               |
+| Miguel Bareiro   | Data Science         | Python, Pandas, Matplotlib, scikit-learn |
+| José Mora        | Data Science         | Python, Pandas, SQL, Git                 |
+| Aldo Gonzalez    | Data Science         | Python, Pandas, Git, Figma               |
+| Pablo Hernandez  | Data Science         | Python, PHP, HTML, CSS, SQL              |
+| Rafael Callata   | Back-End             | C#, .NET, SQL, Python                    |
+| Pedro Hernandez  | Data Science         | JavaScript, PHP, HTML, CSS, SQL          |
+| Emmanuel razo    | Data Science         | Python, css, html, react                 |
