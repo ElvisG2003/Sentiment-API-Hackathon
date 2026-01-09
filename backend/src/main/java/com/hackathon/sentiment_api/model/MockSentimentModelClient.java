@@ -3,7 +3,7 @@ package com.hackathon.sentiment_api.model;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-
+import org.springframework.stereotype.Component;
 //Este es modelo NO ES EL REAL, es solo un mock para avanzar
 
 @Component

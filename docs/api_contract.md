@@ -9,6 +9,7 @@ Request:
 
 Response:
 {
+<<<<<<< HEAD
   "label": 0,
   "prediction": "NEGATIVE"
   "probability": 0.82
@@ -30,4 +31,8 @@ Cuando backend falla al llamar al servicio DS
 {
   "error": "DS_UNAVAILABLE",
   "message": "Data Science service not reachable"
+=======
+  "prediction": "positive",
+  "probability": 0.82
+>>>>>>> origin/backend-api
 }
