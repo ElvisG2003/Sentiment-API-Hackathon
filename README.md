@@ -1,63 +1,92 @@
 # Sentiment-API-Hackathon
-API para el análisis de comentarios basada en la satisfacción de usuarios.
-Permite clasificar comentarios según su sentimiento (positivo o negativo) y filtrar a preferencia del cliente.
+Proyecto de analisis de comentarios basados en la sastifaccion de usuarios que permite clasificar comentarios
 
 ---
-## 📌Descripción del Proyecto
-El proyecto consiste en una arquitectura de microservicios que combina
-Data Science y Back-End para procesar comentarios de usuarios y devolver
-una clasificación de sentimiento mediante una API REST.
 
-Está pensado como solución para análisis de feedback de usuarios en contextos
-de productos digitales, servicios o plataformas.
+## Objetivo del proyecto
 
----
-## 🧠Arquitectura General
+Construir una API capaz de:
 
-- **Data Science** 
-	- Lenguaje: Python
-	- Librerías: Pandas, Scikit-learn
-	- Modelo: TF-IDF + Logistic Regression
-	- Microservicio: FastAPI
-
-- **Backend**
-	- Lenguaje: Java
-	- Framework: Spring Boot
-	- Función: Orquestación, valoración y exposición de la API
-	
-- **Base de Datos**
-	- Por definir
+1. Recibir texto.
+2. Clasificar el sentimiento de manera binaria (1: positive; 0: negative)
+3. Entregar una respuesta consistente y validada.
+4. Dejar el proyecto listo para mejorar/evolucionar: métricas, persistencia, estadisticas y despliegue.
 
 ---
-## 📂Estructura del Repositorio
 
-- /data-science -> Desarrollo y entrenamiento del modelo
-- /backend -> API principal en Spring Boot
-- /docs-> Documentación del proyecto
+## Alcance (Scope)
+
+- Endpoint backend `POST /sentiment`
+- Microservicio DS `POST /predict`
+- Artefactos del modelo versionados en `/data-science/artifacts`
+- Validación de input y formato estándar de errores en backend
+- UI web
+
+🚫 No incluido (por ahora):
+- Persistencia/DB y estadísticas
+- Autenticación / Rate limiting
 
 ---
-## 📊 Estado del Proyecto
 
-**Semana 0**
-- Definición de roles
-- Definición de arquitectura
-- Setup inicial de repositorio
-- Limpieza y preparación del dataset
+## Arquitectura
+
+Cliente → **Spring Boot API** → **FastAPI (DS)** → Modelo (TF-IDF + Logistic Regression)
+
 ---
-## Reglas básicas de Git
 
-- No pushear directamente a "main"
-- Usar branches por área de trabajo:
-	- ds-cleaning
-	- ds-model
-	- backend-api
-	- web-ui
+## Estructura del repositorio
 
-### Convención de commits
-- `feat:` nueva funcionalidad
-- `fix:` correcion de errores
-- `docs:` cambios de documentacion
+- `/backend` → Spring Boot API
+- `/data-science` → modelo + artifacts + servicio FastAPI
+- `/docs` → documentación del proyecto
+
 ---
+
+## Quickstart (Local)
+
+### Requisitos
+- Java **21**
+- Maven (o usar `./mvnw`)
+- Python 3.x
+- Pip
+
+### 1) Levantar Data Science (FastAPI)
+```bash
+cd data-science/service
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8000
+
+Health:
+
+  * GET http://localhost:8000/health
+
+  * GET http://localhost:8000/health-check
+
+Predict:
+
+  * POST http://localhost:8000/predict
+
+  * { "text": "I love this product!" }
+```
+
+### 2) Levantar Backend (Spring Boot)
+
+```bash
+cd backend
+./mvnw spring-boot:run
+
+Health:
+
+  * GET http://localhost:8080/sentiment/health
+
+Predict (backend):
+
+  * POST http://localhost:8080/sentiment
+  * { "text": "The delivery was late and support did not respond" }
+```
+
+---
+
 ##  Equipos y roles 
 
 | Nombre           | Rol principal        | Tecnologías                              |
