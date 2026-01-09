@@ -1,0 +1,10 @@
+* [33mf090a57[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mbackend-api[m[33m, [m[1;31morigin/backend-api[m[33m)[m arreglos generales al codigo
+* [33m4c39d12[m arreglo de pequeños errores
+* [33m23f3af5[m Primera version de la Api trabajada
+* [33m643238e[m Pequeño arreglo de detalles
+* [33m9749ade[m feat: se consolido arquitectura base  de backend, y allineamos con DS
+* [33m67458d5[m API inicial
+* [33m977bcfd[m Delete target/classes/com/hackathon/sentiment_api directory
+* [33mcb14361[m Creacion basica de la Api: -Se crea el Request y Response -Sistema logico basico -Se prueba en host local 8080 funcional
+* [33m0396566[m Creacion basica de la Api: -Se crea el Request y Response -Sistema logico basico -Se prueba en host local 8080 funcional
+* [33m7ff137c[m[33m ([m[1;31morigin/ds-cleaning[m[33m)[m docs: estructura inicial del proyecto
