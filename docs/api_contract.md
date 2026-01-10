@@ -1,7 +1,9 @@
 # API Contract
 
-POST /sentiment
+## BACKEND
 
+### POST /sentiment
+```
 Request:
 {
   "text": "The delivery was late, and the product was in a bad state"
@@ -13,9 +15,9 @@ Response:
   "prediction": "NEGATIVE"
   "probability": 0.82
 }
-
-ERROR 400
-cuando text es corto o viene vacio.
+```
+### ERROR 400 Bad Request (validacion)
+```
 {
   "error": "VALIDATION_ERROR",
   "message": "Invalid request",
@@ -23,11 +25,33 @@ cuando text es corto o viene vacio.
      { "field": "text", "message": "text must not be blank"}
   ]
 }
+```
 
-ERROR 502
-Cuando backend falla al llamar al servicio DS
-
+### ERROR 502 Bad Gateway (DS caido/no responde)
+```
 {
+  "timestamp": "...",
+  "status": 502,
   "error": "DS_UNAVAILABLE",
-  "message": "Data Science service not reachable"
+  "path": "/sentiment",
+  "details": {}
 }
+```
+
+## Data Science (FastAPI)
+
+### POST /predict
+
+Request:
+```
+{ "text": "I love this product!" }
+```
+Response:
+```
+{
+  "prediction": "positive",
+  "probability": 0.93
+}
+```
+
+### GET /health /health-check
