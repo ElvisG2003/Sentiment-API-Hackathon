@@ -1,5 +1,5 @@
 # Sentiment-API-Hackathon
-Proyecto de analisis de comentarios basados en la sastifaccion de usuarios que permite clasificar comentarios
+Proyecto de análisis de comentarios basados en la satifacción de usuarios que permite clasificar comentarios
 
 ---
 
@@ -51,40 +51,55 @@ Cliente → **Spring Boot API** → **FastAPI (DS)** → Modelo (TF-IDF + Logist
 - Pip
 
 ### 1) Levantar Data Science (FastAPI)
+
+#### Comandos (terminal de VS)
 ```bash
 cd data-science/service
 pip install -r requirements.txt
 uvicorn main:app --reload --port 8000
+```
 
-Health:
+#### Probar (DS)
 
-  * GET http://localhost:8000/health
+- Health:
+```md
+  GET http://localhost:8000/health
 
-  * GET http://localhost:8000/health-check
+  GET http://localhost:8000/health-check
+```
 
-Predict:
+- Predict:
 
-  * POST http://localhost:8000/predict
-
-  * { "text": "I love this product!" }
+```bash
+  POST http://localhost:8000/predict
+```
+```JSON
+  {"text": "I love this product"}
+```
+* Response:
+```JSON
+  { "label": 1, "probability": 0.93 }
 ```
 
 ### 2) Levantar Backend (Spring Boot)
 
+#### Comandos (terminal de VS)
 ```bash
 cd backend
 ./mvnw spring-boot:run
-
-Health:
-
-  * GET http://localhost:8080/sentiment/health
-
-Predict (backend):
-
-  * POST http://localhost:8080/sentiment
-  * { "text": "The delivery was late and support did not respond" }
 ```
 
+#### Probar (Backend)
+
+- Health:
+```md
+  GET /sentiment/health
+```
+
+* Response:
+```JSON
+  { "OK"}
+```
 ---
 
 ##  Equipos y roles 
