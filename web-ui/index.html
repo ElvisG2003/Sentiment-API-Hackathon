@@ -2,7 +2,7 @@
 <!doctype html>
 <html lang="es" data-bs-theme="dark">
   <head>
-     <script src="/assets//js/color-modes.js"></script>
+     <script src="assets//js/color-modes.js"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
@@ -10,12 +10,11 @@
 
 
     <!-- Bootstrap core CSS -->
-<link href="/assets/css/bootstrap.min.css" rel="stylesheet">
-
-<link href="/assets/icons/css2.css" rel="stylesheet">
+<link href="assets/css/bootstrap.min.css" rel="stylesheet">
+<link href="assets/icons/css2.css" rel="stylesheet">
 
     <!-- Favicons -->
-<link rel="icon" href="/assets/img/logo.ico">
+<link rel="icon" href="assets/img/logo.ico">
 <meta name="theme-color" content="#712cf9">
 
     <style>
@@ -119,6 +118,36 @@
           </div>
       </div>
     </div>
+    <div>
+      <h2 class="border-bottom pb mb-3">Probar Análisis</h2>
+      <label for="text-input" class="form-label">Texto a analizar</label> 
+      <textarea id="text-input" class="form-control" rows="4" placeholder="Write a comment...(at least 3 characters)">
+      </textarea>
+
+      <div class="d-flex gap-2 align-items-center mt-3">
+        <button id="analyze-btn" class="btn btn-primary" type="button">
+          Analizar
+        </button>
+        <span id="loading" class="text-muted d-none">Analizando...</span>
+      </div>
+
+      <div id="error-alert" class="alert alert-danger mt-3 d-none" role="alert"></div>
+
+      <div id="result-card" class="mt-3 d-none">
+        <div class="d-flex align-items-center gap-2">
+          <span id="result-badge" class="badge bg-secondary">-</span>
+          <span>Probabilidad positiva</span>
+          <strong id="result-probability">-</strong>
+
+        </div>
+
+      </div>
+
+      <div class="text-muted small mt-2">
+        Endpoint: <code>POST /sentiment</code> (Spring Boot API)
+      </div>
+    </div>
+
   </div>
 
   <div class="my-3 p-3 bg-body rounded shadow-sm">
@@ -265,11 +294,14 @@
 </div>
 
 </main>
-    <script src="/assets/js/jquery-3.7.1.min.js"></script> <!-- jQuery -->
-    <script src="/assets/js/chart.js"></script> <!-- Biblioteca Chart.js -->
-    <script type="module" src="/assets/js/script.js"></script> <!-- Archivo de lógica personalizada -->
-    <script src="/assets//js/iconos_font_awesome.js"></script>
-    <script src="/assets//js/bootstrap.bundle.min.js"></script>
-      <script src="/assets//js/offcanvas.js"></script>
+    <script src="assets/js/jquery-3.7.1.min.js"></script> <!-- jQuery -->
+    <script src="assets/js/chart.js"></script> <!-- Biblioteca Chart.js -->
+
+    
+    <script src="assets/js/iconos_font_awesome.js"></script>
+    <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <!--<script src="assets/js/offcanvas.js"></script>-->
+
+    <script src="assets/js/script.js"></script>
   </body>
 </html>
