@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
    * Base URL del backend público (Spring Boot).
    * Si en el futuro cambiamos el puerto, se cambia aquí.
    */
-  const API_BASE_URL = "http://localhost:8000";
+  const API_BASE_URL = "http://localhost:8080";
 
   /**
    * Endpoint que expone Spring Boot
