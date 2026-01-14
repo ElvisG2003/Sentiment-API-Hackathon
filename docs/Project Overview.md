@@ -68,7 +68,7 @@ Además de la clase, el sistema puede usar la **probabilidad**  del modelo para 
 
 ---
 ## 7. Contrato de API
--> Documento único de verdad: `docs/API_CONTRACT.md`
+-> Documento único de verdad: `docs/api_contract.md`
 Debe incluir:
 - Endpoints
 - Request/Response JSON
@@ -78,4 +78,4 @@ Debe incluir:
 
 ---
 ## 8. Roadmap / Cronograma
-El avance semanal y planificación viven en: `docs/ROADMAP.md`  
+El avance Y planificación viven en: `docs/roadmap.md`  

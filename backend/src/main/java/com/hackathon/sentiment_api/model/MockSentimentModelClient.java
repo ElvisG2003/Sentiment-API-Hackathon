@@ -1,5 +1,6 @@
 package com.hackathon.sentiment_api.model;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.List;
 //Este es modelo NO ES EL REAL, es solo un mock para avanzar
 
 @Component
+@ConditionalOnProperty(name="sentiment.model.client", havingValue="mock", matchIfMissing=true)
 public class MockSentimentModelClient implements SentimentModelClient{
 
     private static final List<String> NEGATIVE_KEYWORDS =
