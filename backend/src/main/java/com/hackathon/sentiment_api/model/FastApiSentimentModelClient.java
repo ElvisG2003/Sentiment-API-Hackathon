@@ -18,12 +18,12 @@ import org.springframework.web.client.RestClient;
 @ConditionalOnProperty(name = "sentiment.model.client", havingValue = "fastapi")
 public class FastApiSentimentModelClient implements SentimentModelClient {
     // Guardamos un RestClient con una base url
-    private final RestClient RestClient;
+    private final RestClient restClient;
 
     // Constructo Spring que da la property
     // En caso de no existur property usa http://localhost:8000
     public FastApiSentimentModelClient(@Value("${sentiment.ds.base-url:http://localhost:8000}") String baseUrl) {
-        this.RestClient = org.springframework.web.client.RestClient.builder()
+        this.restClient = org.springframework.web.client.RestClient.builder()
                 .baseUrl(baseUrl) // Base URL del servicio FastAPI
                 .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE) // Tipo de contenido JSON
                 .build(); // Construimos el Cliente
@@ -33,7 +33,7 @@ public class FastApiSentimentModelClient implements SentimentModelClient {
 @Override
 public ModelResult predict(String text){
     // Hacemos la llamada POST al endpoint /predict de FastAPI
-    DsPredictResponse resp = RestClient.post() // Post Request
+    DsPredictResponse resp = restClient.post() // Post Request
             .uri("/predict") // path del endpoint
             .contentType(MediaType.APPLICATION_JSON) // Enviamos JSON
             .body(new DsPredictRequest(text)) // body: {"text": "texto a analizar"}

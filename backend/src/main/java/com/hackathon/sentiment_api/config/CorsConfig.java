@@ -11,7 +11,7 @@ public class CorsConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 //Origenes tipicos de servidores locales
-                .allowedOrigins("*",
+                .allowedOrigins(
                     "http://localhost:*",
                     "http://127.0.0.1:*"
                 )
