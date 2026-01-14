@@ -24,7 +24,8 @@ Este proyecto tiene **2 APIs**
 #### Response 200(JSON)
 ```json
 {
-  "prediction": "negative",
+  "label": 0,
+  "prediction": "NEGATIVE"
   "probability": 0.82
 }
 ```
@@ -82,7 +83,8 @@ Este proyecto tiene **2 APIs**
 #### Request(JSON)
 ```json
 {
-    "text": "I love this product"
+  "error": "DS_UNAVAILABLE",
+  "message": "Data Science service not reachable"
 }
 ```
 
