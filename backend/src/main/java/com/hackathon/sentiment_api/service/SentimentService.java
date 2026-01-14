@@ -71,9 +71,9 @@ public class SentimentService {
 
     private String mapLabelToPrediction(int label) {
         return switch (label) {
-            case 1 -> "Positive";
-            case 0 -> "Negative";
-            default -> "Unknown";
+            case 1 -> "positive";
+            case 0 -> "negative";
+            default -> throw new ModelServiceExceptionMesagge("Etiqueta de predicción desconocida del modelo: " + label);
         };
     }
 }

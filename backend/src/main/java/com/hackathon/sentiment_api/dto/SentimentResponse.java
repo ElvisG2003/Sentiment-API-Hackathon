@@ -2,7 +2,7 @@ package com.hackathon.sentiment_api.dto;
 
 /*
     * Dto para la respuesta de la prediccion
-    * prediction: "Positive"/"Negative"
+    * prediction: "positive"/"negative"
     * probability: confianza del modelo (0.0 - 1.0)
     * label: entero 0/1
 */
