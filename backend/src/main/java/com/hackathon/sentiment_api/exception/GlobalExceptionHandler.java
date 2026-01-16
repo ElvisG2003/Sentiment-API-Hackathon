@@ -1,5 +1,6 @@
 package com.hackathon.sentiment_api.exception;
 
+import com.hackathon.sentiment_api.exception.ModelServiceExceptionMesagge;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,5 +102,21 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+    }
+
+    // 5) Error al llamar al servicio del modelo (503)
+    // Cuando el servicio del modelo (FastAPI) no responde o da error
+    @ExceptionHandler(ModelServiceExceptionMesagge.class)
+    public ResponseEntity<ErrorResponse> handleModelServiceException(ModelServiceExceptionMesagge ex,
+                                                                    HttpServletRequest request) {
+
+        ErrorResponse body = new ErrorResponse(
+                HttpStatus.SERVICE_UNAVAILABLE.value(), //503
+                ex.getMessage(),                        //Mensaje controlado
+                request.getRequestURI(),
+                Map.of()
+        );
+
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(body);
     }
 }
