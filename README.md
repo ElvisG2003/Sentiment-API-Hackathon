@@ -97,8 +97,8 @@ cd backend
 ```
 
 * Response:
-```JSON
-  { "OK"}
+```text
+  OK
 ```
 ---
 
