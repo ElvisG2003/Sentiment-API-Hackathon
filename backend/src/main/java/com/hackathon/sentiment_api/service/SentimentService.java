@@ -10,15 +10,15 @@ import com.hackathon.sentiment_api.model.SentimentModelClient;
 
 import org.slf4j.Logger; // Logger es de SLF4J(Simple Logging Facade for Java), se usa para escribir logs
 
-import org.slf4j.LoggerFactory; // Fabrica para crear instancias de Logger 
+import org.slf4j.LoggerFactory; // Fabrica para crear instancias de Logger
 
 import org.springframework.stereotype.Service; // Anotacion de Spring para marcar una clase como servicio
 
 /*
-    * Servicio para la prediccion de sentimiento:
-    * Normalización de texto
-    * Llamada al modelo 
-    * Adapta el resultado al SentimentResponse DTO
+ * Servicio para la prediccion de sentimiento:
+ * Normalización de texto
+ * Llamada al modelo
+ * Adapta el resultado al SentimentResponse DTO
  */
 @Service
 public class SentimentService {
@@ -41,13 +41,13 @@ public class SentimentService {
             throw new InvalidTextException("El texto de entrada no puede estar vacio");
         }
 
-        
+
         boolean hasLetterOrDigit = normalized.codePoints().anyMatch(Character::isLetterOrDigit); // Verifica si hay al menos una letra o digito
-        
+
         if (!hasLetterOrDigit) { // Si no hay letras ni digitos, lanza excepcion
             throw new InvalidTextException("El texto debe contener al menos una letra o un número.");
         }
-        
+
 
         SentimentModelClient.ModelResult result; // Clase interna para representar el resultado del modelo
         try {

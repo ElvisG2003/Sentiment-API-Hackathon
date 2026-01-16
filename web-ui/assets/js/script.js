@@ -28,8 +28,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const canvasCount = $("grafica2");
 
   // Elementos del form de análisis
-  const textInput = $("text-input");
-  const analyzeBtn = $("analyze-btn");
+  const textInput = $("text-input"); // -> textarea
+  const analyzeBtn = $("analyze-btn");  // -> botón Analizar
 
   // Si un error ocurre, se muestra en la consola y se detiene
   if (!canvasProb || !canvasCount) {
@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const chartProb = new Chart(canvasProb, {
     type: "bar",
     data: {
-      labels: ["Prob. positiva"],
+      labels: ["Probabilidad de coincidencia"],
       datasets: [
         {
           label: "Último análisis",
@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const chartCount = new Chart(canvasCount, {
     type: "pie",
     data: {
-      labels: ["Positive", "Negative"],
+      labels: ["No coincide", "Si coincide"],
       datasets: [
         {
           label: "Conteo",
@@ -96,7 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Deshabilita el botón mientras trabaja
     analyzeBtn.disabled = isLoading;
   }
-
+    // funcion para mostrar errores
   function showError(message) {
     const el = $("error-alert");
     if (!el) return;
@@ -137,12 +137,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function updateCharts(probability, prediction) {
     // Actualiza el gráfico 1 de probabilidad
-    chartProb.data.datasets[0].data = [probability];
+    chartProb.data.datasets[0].data = [Math.round(probability * 1000) / 10];
     chartProb.update();
 
     // Actualiza el gráfico 2 de conteo acumulado
-    if (prediction === "positive") sessionStats.positive++;
-    else sessionStats.negative++;
+    if (prediction === "positive") sessionStats.positive=Math.round(probability * 1000) / 10;
+    else sessionStats.negative=Math.round(probability * 1000) / 10;
+
+    if (sessionStats.positive == 0) sessionStats.positive=100-(Math.round(probability * 1000) / 10);
+    if (sessionStats.negative == 0) sessionStats.negative=100-(Math.round(probability * 1000) / 10);
+
 
     chartCount.data.datasets[0].data = [
       sessionStats.positive,
@@ -159,7 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Validación rápida del lado UI
     if (text.length < 3) {
-      showError("El texto debe tener al menos 3 caracteres.");
+      showError("El campo debe contener al menos 3 caracteres.");
       return;
     }
 
