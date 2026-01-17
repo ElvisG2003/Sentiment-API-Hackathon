@@ -1,3 +1,4 @@
+
 // Definimos donde vive el paquete
 package com.hackathon.sentiment_api.model;
 // Importamos para ignorar campos extras cuando parseamos JSON
@@ -47,6 +48,7 @@ public class FastApiSentimentModelClient implements SentimentModelClient {
                 .build(); // Construimos el Cliente
     }
 
+<<<<<<< HEAD
 // Implementamos el metodo predict definido en la interfaz
 @Override
 public ModelResult predict(String text){
@@ -60,23 +62,40 @@ public ModelResult predict(String text){
             .body(new DsPredictRequest(text)) // body: {"text": "texto a analizar"}
             .retrieve() // Ejecutamos la llamada
             .body(DsPredictResponse.class); // Parseamos la respuesta a DsPredictResponse
+=======
+    // Implementamos el metodo predict definido en la interfaz
+    @Override
+    public ModelResult predict(String text){
+        // Hacemos la llamada POST al endpoint /predict de FastAPI
+        DsPredictResponse resp = restClient.post() // Post Request
+                .uri("/predict") // path del endpoint
+                .contentType(MediaType.APPLICATION_JSON) // Enviamos JSON
+                .body(new DsPredictRequest(text)) // body: {"text": "texto a analizar"}
+                .retrieve() // Ejecutamos la llamada
+                .body(DsPredictResponse.class); // Parseamos la respuesta a DsPredictResponse
+>>>>>>> origin/web-ui
 
-    // si no hay respuesta
-    if (resp == null){
-        throw new RuntimeException("Ds service returned empty response");
+        // si no hay respuesta
+        if (resp == null){
+            throw new RuntimeException("Ds service returned empty response");
+        }
+        // Convertimos la respuesta al formato de nuestra interfaz
+        return new ModelResult(resp.label(), resp.probability());
     }
+<<<<<<< HEAD
         // Convertimos la respuesta al formato de nuestra interfaz
         return new ModelResult(resp.label(), resp.probability());
     }finally{
         long ms = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - t0);
         log.info("DS FastAPI call to {}/predict took {} ms", baseUrl, ms);
     }
-}
+=======
 
-private record DsPredictRequest(String text){}
+    private record DsPredictRequest(String text){}
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+    @JsonIgnoreProperties(ignoreUnknown = true)
 
-private record DsPredictResponse(int label, double probability){}
+    private record DsPredictResponse(int label, double probability){}
 
+>>>>>>> origin/web-ui
 }
