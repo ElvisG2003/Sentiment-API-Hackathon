@@ -44,7 +44,7 @@ Cliente → **Spring Boot API** → **FastAPI (DS)** → Modelo (TF-IDF + Logist
 ### Requisitos
 - Java **21**
 - Maven (o usar `./mvnw`)
-- Python 3.x
+- Python 3.12
 - Pip
 
 ### 1) Levantar Data Science (FastAPI)
