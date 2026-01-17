@@ -14,31 +14,28 @@ Construir una API capaz de:
 
 ---
 
-## Alcance (Scope)
+## Que se hace
+Se usan 3 componentes principales para crear un sistema de clasificacion binaria:
 
-- Endpoint backend `POST /sentiment`
-- Microservicio DS `POST /predict`
-- Artefactos del modelo versionados en `/data-science/artifacts`
-- Validación de input y formato estándar de errores en backend
-- UI web
+- **Web UI** (frontend estático) -> `web-ui/
+- **Backend** (Spring Boot, API publica) -> `backend/`
+- **Data Science** (FastAPI + modelo sciki-learn) -> `data-science/service/`
 
-🚫 No incluido (por ahora):
-- Persistencia/DB y estadísticas
-- Autenticación / Rate limiting
+Con esto, se entrega:
+
+- `prediction`: `"positive"` / `"negative"`
+- `label`: `1` (positive) / `1` (negative)
+- `probability`: probabilidad **de que el resultado sea positivo** (0.0-1.0)
+
+> Como extra el backend expone dos datos extras para un mejor entendimiento
+> - `positiveProbability` (== `probability`) -> Probabilidad de resultados positivos
+> - `negativeProbability` (== 1- `probability`) -> El restante de probability para exponer probabilidad de respuesta negativa
 
 ---
 
 ## Arquitectura
 
 Cliente → **Spring Boot API** → **FastAPI (DS)** → Modelo (TF-IDF + Logistic Regression)
-
----
-
-## Estructura del repositorio
-
-- `/backend` → Spring Boot API
-- `/data-science` → modelo + artifacts + servicio FastAPI
-- `/docs` → documentación del proyecto
 
 ---
 
@@ -55,9 +52,18 @@ Cliente → **Spring Boot API** → **FastAPI (DS)** → Modelo (TF-IDF + Logist
 #### Comandos (terminal de VS)
 ```bash
 cd data-science/service
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 uvicorn main:app --reload --port 8000
 ```
+
+#### Chequeos
+
+- `py -0p` -> Python 3.12
+- En caso de estar roto -> `Remove-Item -Recurse -Force .\.venv -ErrorAction SilentlyContinue`
+- `py -3.12 -m venv .venv` -> Crear venv con Python 3.12
+- Repetir Comandos
 
 #### Probar (DS)
 
@@ -65,21 +71,18 @@ uvicorn main:app --reload --port 8000
 ```md
   GET http://localhost:8000/health
 
-  GET http://localhost:8000/health-check
-```
-
-- Predict:
-
-```bash
   POST http://localhost:8000/predict
 ```
-```JSON
-  {"text": "I love this product"}
-```
+* Get -> `{"status":"ok"}` / `{"status":"starting"}` si no funciono
+* Post -> se envia con `{ "text": "I love this product" }`
+
 * Response:
 ```JSON
-  { "label": 1, "probability": 0.93 }
+  { 
+    "label": 1, "probability": 0.93 
+  }
 ```
+---
 
 ### 2) Levantar Backend (Spring Boot)
 
@@ -89,17 +92,30 @@ cd backend
 ./mvnw spring-boot:run
 ```
 
-#### Probar (Backend)
+#### Probar (Backend) (Mejor desde intellij)
 
 - Health:
 ```md
-  GET /sentiment/health
+  GET http://localhost:8080/sentiment/health
+
+  POST http://localhost:8080/sentiment
 ```
+* Get -> `{"status":"ok"}` 
+* Post -> se envia con `{ "text": "I love this product" }`
 
 * Response:
 ```JSON
-  { "OK"}
+  { 
+    "label": 1, "probability": 0.93 
+    "prediction": 
+    "probability":
+  }
 ```
+---
+
+### Levantar web-UI
+Usar Live Server en VSCode
+
 ---
 
 ##  Equipos y roles 
