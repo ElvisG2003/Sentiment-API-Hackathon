@@ -1,16 +1,39 @@
 # API Contract
 
-Este proyecto tiene **2 APIs**
+Este documento busca definir el contrato entre 2 APIs:
 
-1) **Backend (Spring Boot)**: API pública
-2) **Data Science (FastAPI)**: Microservicio interno
+- Web UI -> Backend(Spring Boot)
+- Backend -> Model Service (FastAPI)
+
 
 ## 1) BACKEND
 
-### 1.1 POST `/sentiment`
+### Url Base (local)
+
+-  `http://localhost:8080`
+
+### 1.1 Health
+- Health simple para verificar que el backend esta sano.
+
+**GET** `/sentiment/health`
+
+#### Response 200 (text)
+```text
+  OK
+```
+
+---
+
+### 1.2 Predict Sentiment 
 - Clasifica un texto en **binario**: `positive / negative`.
 
-#### Request (JSON)
+**POST** `/sentiment`
+
+**Request Headers**
+
+- `Content-Type: application/json`
+
+#### Request Body (JSON)
 ```json
 {
   "text": "The delivery was late, and the product was in a bad state"
@@ -25,24 +48,15 @@ Este proyecto tiene **2 APIs**
 ```json
 {
   "label": 0,
-  "prediction": "NEGATIVE"
+  "prediction": "negative",
   "probability": 0.82
 }
 ```
+
+* label: clasificacion 0 o 1 en caso de ser negative o positive correspondientemente
 * prediction: "positive" o "negative"
 * probability: probabilidad asociada a la clase positiva (0.0 a 1.0)
 
----
-
-### 1.2 Get `/sentiment/health`
-- Health simple para verificar que el backend esta sano.
-
-#### Response 200
-```
-{
-  OK
-}
-```
 ---
 
 ### 1.3 Errores
