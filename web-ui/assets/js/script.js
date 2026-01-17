@@ -154,9 +154,13 @@ document.addEventListener("DOMContentLoaded", () => {
     chartProb.update();
 
     // Actualiza el gráfico 2 de conteo acumulado
-    if (prediction === "positive") sessionStats.positive++;
-    else sessionStats.negative++;
+    if (prediction === "positive") sessionStats.positive=Math.round(probability * 1000) / 10;
+    else sessionStats.negative=Math.round(probability * 1000) / 10;
 
+    if (sessionStats.positive == 0) sessionStats.positive=100-(Math.round(probability * 1000) / 10);
+    if (sessionStats.negative == 0) sessionStats.negative=100-(Math.round(probability * 1000) / 10);
+
+    
     chartCount.data.datasets[0].data = [
       sessionStats.positive,
       sessionStats.negative,
