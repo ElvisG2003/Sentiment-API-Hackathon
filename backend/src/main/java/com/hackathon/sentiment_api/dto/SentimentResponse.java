@@ -10,29 +10,25 @@ public class SentimentResponse {
     private String prediction;
     private double probability;
     private Integer label;
-    private double positiveProbability;
-    private double negativeProbability;
 
     public SentimentResponse() {
         // Constructor vacio
     }
 
-    public SentimentResponse(String prediction, double probability, Integer label, double positiveProbability, double negativeProbability) {
+    public SentimentResponse(String prediction, double probability, Integer label) {
         this.prediction = prediction;
         this.probability = probability;
         this.label = label;
-        this.positiveProbability= positiveProbability;
-        this.negativeProbability= negativeProbability;
     }
 
     /*
-        * Constructor legacy sin label
-        * Se deja para compatibilidad hacia atras
+     * Constructor legacy sin label
+     * Se deja para compatibilidad hacia atras
      */
-    public SentimentResponse(String prediction, double probability, Integer label) {
-        this(prediction, probability, label, null, null);
+    public SentimentResponse(String prediction, double probability) {
+        this(prediction, probability, null);
     }
-
+    
     public String getPrediction() {
         return this.prediction;
     }
@@ -57,19 +53,18 @@ public class SentimentResponse {
         this.label = label;
     }
 
-    public double getPositiveProbability() {
-        return positiveProbability;
+    /*
+        * En este proyecto "probability", representa la probabilidad de la clase positiva
+        * Exponemos esa probabilidad
+    */
+    public double getPositiveProbability(){
+        return this.probability;
+    }
+    /*
+        * Probabilidad de negativa (1-probabilidad)
+    */
+    public double getNegativeProbability(){
+        return 1.0-this.probability;
     }
 
-    public void setPositiveProbability(double positiveProbability) {
-        this.positiveProbability = positiveProbability;
-    }
-
-    public double getNegativeProbability() {
-        return negativeProbability;
-    }
-
-    public void setNegativeProbability(double negativeProbability) {
-        this.negativeProbability = negativeProbability;
-    }
 }

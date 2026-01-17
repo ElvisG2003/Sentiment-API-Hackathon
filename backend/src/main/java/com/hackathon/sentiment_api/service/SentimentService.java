@@ -60,10 +60,7 @@ public class SentimentService {
 
         String prediction = mapLabelToPrediction(result.label());
 
-        double positiveProb = result.probability();
-        double negativeProb = 1.0 - positiveProb;
-
-        return new SentimentResponse(prediction, result.probability(), result.label(), positiveProb, negativeProb);
+        return new SentimentResponse(prediction, result.probability(), result.label());
     }
 
 
@@ -76,7 +73,7 @@ public class SentimentService {
         return switch (label) {
             case 1 -> "positive";
             case 0 -> "negative";
-            default -> "unknown";
+            default -> throw new IllegalArgumentException("Etiqueta de predicción desconocida: " + label);
         };
     }
 }
