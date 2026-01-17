@@ -60,7 +60,10 @@ public class SentimentService {
 
         String prediction = mapLabelToPrediction(result.label());
 
-        return new SentimentResponse(prediction, result.probability(), result.label());
+        double positiveProb = result.probability();
+        double negativeProb = 1.0 - positiveProb;
+
+        return new SentimentResponse(prediction, result.probability(), result.label(), positiveProb, negativeProb);
     }
 
 
@@ -71,9 +74,9 @@ public class SentimentService {
 
     private String mapLabelToPrediction(int label) {
         return switch (label) {
-            case 1 -> "Positive";
-            case 0 -> "Negative";
-            default -> "Unknown";
+            case 1 -> "positive";
+            case 0 -> "negative";
+            default -> "unknown";
         };
     }
 }
