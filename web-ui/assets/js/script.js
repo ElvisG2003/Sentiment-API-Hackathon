@@ -30,6 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Elementos del form de análisis
   const textInput = $("text-input"); // -> textarea
   const analyzeBtn = $("analyze-btn");  // -> botón Analizar
+  const resetBtn = $("reset-btn");  // -> botón Resetear Sesión
 
   // Si un error ocurre, se muestra en la consola y se detiene
   if (!canvasProb || !canvasCount) {
@@ -67,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
       scales: {
         y: {
           beginAtZero: true,
-          suggestedMax: 1, // -> La escala esta entre 0 y 1
+          suggestedMax: 100, 
         },
       },
     },
@@ -77,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const chartCount = new Chart(canvasCount, {
     type: "pie",
     data: {
-      labels: ["No coincide", "Si coincide"],
+      labels: ["positive", "negative"],
       datasets: [
         {
           label: "Conteo",
@@ -85,6 +86,10 @@ document.addEventListener("DOMContentLoaded", () => {
           borderWidth: 1,
         },
       ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
     },
   });
 
@@ -113,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
     el.textContent = "";
   }
 
-  function showResult(prediction, probability) {
+  function showResult(prediction, posprobability, negprobability) {
     const badge = $("result-badge");// -> span donde va el resultado
     if (badge) {
       badge.textContent = prediction;
@@ -121,14 +126,21 @@ document.addEventListener("DOMContentLoaded", () => {
       // Cambiamos color según predicción
       badge.classList.remove("bg-secondary", "bg-success", "bg-danger");
       if (prediction === "positive") badge.classList.add("bg-success");
+      else if (prediction === "negative") badge.classList.add("bg-danger");
       else badge.classList.add("bg-danger");
     }
 
     // Mostrar probabilidad como porcentaje bonito
     const probEl = $("result-probability");
     if (probEl) {
-      const pct = Math.round(probability * 1000) / 10; // 1 decimal
+      const pct = Math.round(posprobability * 1000) / 10; // 1 decimal
       probEl.textContent = `${pct}%`;
+    }
+
+    const negEl = $("result-negprobability");
+    if (negEl) {
+      const pctNeg = Math.round(negprobability * 1000) / 10; // 1 decimal
+      negEl.textContent = `${pctNeg}%`;
     }
 
     // Mostrar tarjeta de resultado
@@ -137,23 +149,43 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function updateCharts(probability, prediction) {
     // Actualiza el gráfico 1 de probabilidad
-    chartProb.data.datasets[0].data = [Math.round(probability * 1000) / 10];
+    const pct= Math.round(probability * 1000) / 10; // 0..100 con 1 decimal
+    chartProb.data.datasets[0].data = [pct];
     chartProb.update();
 
     // Actualiza el gráfico 2 de conteo acumulado
-    if (prediction === "positive") sessionStats.positive=Math.round(probability * 1000) / 10;
-    else sessionStats.negative=Math.round(probability * 1000) / 10;
-
-    if (sessionStats.positive == 0) sessionStats.positive=100-(Math.round(probability * 1000) / 10);
-    if (sessionStats.negative == 0) sessionStats.negative=100-(Math.round(probability * 1000) / 10);
-
+    if (prediction === "positive") sessionStats.positive++;
+    else sessionStats.negative++;
 
     chartCount.data.datasets[0].data = [
       sessionStats.positive,
       sessionStats.negative,
     ];
     chartCount.update();
+
+    // Logs para debug
+    console.log("prediction:", prediction);
+    console.log("sessionStats:", sessionStats);
+    console.log("pieData:", chartCount.data.datasets[0].data);
   }
+
+  function resetSession() {
+    sessionStats.positive = 0;
+    sessionStats.negative = 0;
+
+    chartCount.data.datasets[0].data = [0, 0];
+    chartCount.update();
+
+    // (Opcional) reset gráfico 1 también:
+    chartProb.data.datasets[0].data = [0];
+    chartProb.update();
+
+    $("result-card")?.classList.add("d-none");
+    clearError();
+}
+
+  resetBtn?.addEventListener("click", resetSession);
+
 
   async function analyzeText() {
     clearError();
@@ -203,10 +235,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Si fue OK, parseamos JSON del response
       const data = await resp.json();
+      
+      // Obtener probabilidad positiva (adaptarse a ambas APIs)
+      const pos = (typeof data.positiveProbability === "number") // -> Nueva API
+      ? data.positiveProbability  
+      : data.probability;
+
+      const neg = (typeof data.negativeProbability === "number") // -> Nueva API
+      ? data.negativeProbability  
+      : (1 - pos);
 
       // Esperado: { prediction: "positive"|"negative", probability: number }
-      showResult(data.prediction, data.probability);
-      updateCharts(data.probability, data.prediction);
+      showResult(data.prediction, pos, neg);
+      updateCharts(pos, data.prediction);
     } catch (e) {
       showError(e.message ?? "Error desconocido");
     } finally {

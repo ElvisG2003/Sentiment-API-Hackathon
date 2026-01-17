@@ -20,3 +20,7 @@
           background-color: #5a3e9f; /* Un tono más oscuro al pasar el ratón */
         border-color: #5a3e9f;
     }
+
+    .chart-container {
+      height: 300px; /* Altura fija para el contenedor del gráfico */
+    }
