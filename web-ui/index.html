@@ -105,7 +105,9 @@
       <div id="error-alert" class="alert alert-danger mt-3 d-none" role="alert"></div>
 
       <div id="result-card" class="mt-3 d-none">
-        <!-- <div class="d-flex flex-colum gap 1">
+
+        <div class="d-flex flex-column gap-1">
+
           <div  style="white-space: pre-line;" class="d-flex align-items-center gap-2">
 
             <span class="text-muted">Predicción</span>
@@ -117,7 +119,7 @@
             <span class="text-muted">Probabilidad negativa</span>
             <strong id="result-negprobability">-</strong>
           </div>
-        </div> -->
+        </div> 
         <div class="d-flex align-items-center gap-2">
           <span>Probabilidad</span>
           <span id="result-badge" class="badge badge-pill bg-secondary"></span>
@@ -141,6 +143,39 @@
           <!-- <p class="text-muted small mb-2">Se hace el conteo de positive/negative, desde que se abrio la pagina.</p> -->
           <div class="chart-container mb-4">
               <canvas id="grafica2"></canvas>
+          </div>
+
+          <div class="card mt-3">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5 class="card-title mb-0">Historial de análisis</h5>
+                <div class="d-flex gap-2">
+                  <button id="btn-export-history" class="btn btn-outline-secondary">Exportar Json</button>
+                  <button id="btn-clear-history" class="btn btn-outline-danger btn-sm">Limpiar Historial</button>
+                </div>
+              </div>
+
+              <div class="table-responsive">
+                <table class="table table-sm table-striped align-middle mb-0">
+                  <thead>
+                    <tr>
+                      <th style="min-width: 140px;">Fecha</th>
+                      <th>Texto</th>
+                      <th style="min-width: 110px;">Predicción</th>
+                      <th style="min-width: 120px;">Prob. +</th>
+                      <th style="min-width: 120px;">Prob. -</th>
+                    </tr>
+                  </thead>
+                  <tbody id="history-body">
+                    <!-- Historial de análisis se agrega aquí dinámicamente -->
+                  </tbody>
+                </table>
+              </div>
+              
+              <small class="text-muted d-block mt-2">
+                Guardamos los últimos 20 analisis en formato local
+              </small>
+            </div>
           </div>
       </div>
     </div>

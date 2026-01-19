@@ -32,6 +32,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const analyzeBtn = $("analyze-btn");  // -> botón Analizar
   const resetBtn = $("reset-btn");  // -> botón Resetear Sesión
 
+  // Historial (producto / trazabilidad) - opcional
+  const HISTORY_KEY = "sentiment_analysis_history";
+  const HISTORY_LIMIT = 20; // máximo ítems en el historial
+
+  let history = [];
+
   // Si un error ocurre, se muestra en la consola y se detiene
   if (!canvasProb || !canvasCount) {
     console.error("❌ No se encontraron los canvas grafica1/grafica2 en el HTML.");
@@ -154,11 +160,12 @@ document.addEventListener("DOMContentLoaded", () => {
     chartProb.update();
 
     // Actualiza el gráfico 2 de conteo acumulado
-    if (prediction === "positive") sessionStats.positive=Math.round(probability * 1000) / 10;
-    else sessionStats.negative=Math.round(probability * 1000) / 10;
-
-    if (sessionStats.positive == 0) sessionStats.positive=100-(Math.round(probability * 1000) / 10);
-    if (sessionStats.negative == 0) sessionStats.negative=100-(Math.round(probability * 1000) / 10);
+    if (prediction === "positive") {
+      sessionStats.positive += 1;
+    } else if (prediction === "negative") {
+      sessionStats.negative += 1;
+    }
+    
 
     
     chartCount.data.datasets[0].data = [
@@ -166,7 +173,8 @@ document.addEventListener("DOMContentLoaded", () => {
       sessionStats.negative,
     ];
     chartCount.update();
-
+    
+  
     // Logs para debug
     console.log("prediction:", prediction);
     console.log("sessionStats:", sessionStats);
@@ -188,7 +196,6 @@ document.addEventListener("DOMContentLoaded", () => {
     clearError();
 }
 
-  resetBtn?.addEventListener("click", resetSession);
 
 
   async function analyzeText() {
@@ -251,6 +258,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Esperado: { prediction: "positive"|"negative", probability: number }
       showResult(data.prediction, pos, neg);
+      addToHistory(text, data.prediction, pos);
+      renderHistory();
+
       updateCharts(pos, data.prediction);
     } catch (e) {
       showError(e.message ?? "Error desconocido");
@@ -258,6 +268,128 @@ document.addEventListener("DOMContentLoaded", () => {
       showLoading(false);
     }
   }
+
+  // Funciones de Historial (opcional)
+    // Limita un número al rango 0..1
+  function clamp01(n) {  // Evita errores si la API devuelve algo raro
+  const x = Number(n);
+  if (Number.isNaN(x)) return 0;
+  return Math.max(0, Math.min(1, x));
+  }
+    // Carga el historial desde localStorage
+  function loadHistory() {
+    try {
+      const raw = localStorage.getItem(HISTORY_KEY);
+      history = raw ? JSON.parse(raw) : [];
+      if (!Array.isArray(history)) history = [];
+    } catch {
+      history = [];
+    }
+  }
+    // Guarda el historial en localStorage
+  function saveHistory() {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  }
+
+    // Registro de Historial 
+
+  function addToHistory(text, prediction, posprobability){
+    const pos = clamp01(posprobability);
+    const neg = 1 - pos;
+
+    const item = {
+      timestamp: new Date().toISOString(),
+      text: String(text ?? ""),
+      prediction: String(prediction ?? ""),
+      positiveProbability: pos,
+      negativeProbability: neg,
+    };
+
+    history.unshift(item); // agrega al inicio
+    history = history.slice(0, HISTORY_LIMIT); // limita tamaño
+    saveHistory();
+  }
+
+
+  // Renderiza el historial en la UI (opcional)
+  function formatLocalData(iso){
+    try {
+      const d = new Date(iso);
+      return d.toLocaleString();
+    } catch {
+      return iso;
+    }
+  }
+
+  function badgeClass(prediction){
+    if (prediction === "positive") return "bg-success";
+    if (prediction === "negative") return "bg-danger";
+    return "bg-secondary";
+  }
+
+  function renderHistory() {
+    const tbody = document.getElementById("history-body");
+    if (!tbody) return;
+
+    tbody.innerHTML = ""; // limpia
+
+    for (const item of history){
+      const tr = document.createElement("tr"); // fila historial
+
+      const tdDate = document.createElement("td"); // columna fecha
+      tdDate.textContent = formatLocalData(item.timestamp); // formatea fecha
+
+      const tdText = document.createElement("td"); // columna texto
+
+      const t = item.text.trim(); // texto analizado
+      tdText.textContent = t.length > 50 ? t.slice(0, 50) + "..." : t; // recorta si es largo
+
+      const tdPrediction = document.createElement("td"); // columna predicción
+      const span = document.createElement("span"); // badge predicción
+      span.className = `badge ${badgeClass(item.prediction)}`; // clase según predicción
+      span.textContent = item.prediction || "-"; // texto predicción
+      tdPrediction.appendChild(span); // agrega badge a la celda
+
+      const tdPos = document.createElement("td"); // columna probabilidad
+      tdPos.textContent = `${(clamp01(item.positiveProbability) * 100).toFixed(1)}%`; // formatea probabilidad positiva
+
+      const tdNeg = document.createElement("td"); // columna probabilidad
+      tdNeg.textContent = `${(clamp01(item.negativeProbability)* 100).toFixed(1)}%`; // formatea probabilidad negativa 
+
+      tr.appendChild(tdDate);
+      tr.appendChild(tdText);
+      tr.appendChild(tdPrediction);
+      tr.appendChild(tdPos);
+      tr.appendChild(tdNeg);
+
+      tbody.appendChild(tr); // agrega fila al tbody
+    }
+  }
+
+  // ExportarJson
+
+  function exportHistoryJson() {
+    const blob = new Blob([JSON.stringify(history, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "sentiment_analysis_history.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // LimpiarHistorial
+  function clearHistory() {
+    history = [];
+    saveHistory();
+    renderHistory();
+  }
+
+  resetBtn?.addEventListener("click", resetSession);
+  $("btn-export-history")?.addEventListener("click", exportHistoryJson);
+  $("btn-clear-history")?.addEventListener("click", clearHistory);
+
 
   // Evento click del botón Analizar
   analyzeBtn.addEventListener("click", analyzeText);
@@ -268,6 +400,9 @@ document.addEventListener("DOMContentLoaded", () => {
       analyzeText();
     }
   });
+
+  loadHistory();
+  renderHistory();
 
   console.log("✅ UI lista. Esperando análisis...");
 
@@ -442,3 +577,4 @@ document.addEventListener("DOMContentLoaded", () => {
   loadcsv(urlArchivo);
 
 });
+      
