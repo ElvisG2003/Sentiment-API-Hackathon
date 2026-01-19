@@ -32,6 +32,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const analyzeBtn = $("analyze-btn");  // -> botón Analizar
   const resetBtn = $("reset-btn");  // -> botón Resetear Sesión
 
+  // Historial (producto / trazabilidad) - opcional
+  const HISTORY_KEY = "sentiment_analysis_history";
+  const HISTORY_LIMIT = 20; // máximo ítems en el historial
+
+  let history = [];
+
   // Si un error ocurre, se muestra en la consola y se detiene
   if (!canvasProb || !canvasCount) {
     console.error("❌ No se encontraron los canvas grafica1/grafica2 en el HTML.");
@@ -154,15 +160,21 @@ document.addEventListener("DOMContentLoaded", () => {
     chartProb.update();
 
     // Actualiza el gráfico 2 de conteo acumulado
-    if (prediction === "positive") sessionStats.positive++;
-    else sessionStats.negative++;
+    if (prediction === "positive") {
+      sessionStats.positive += 1;
+    } else if (prediction === "negative") {
+      sessionStats.negative += 1;
+    }
+    
 
+    
     chartCount.data.datasets[0].data = [
       sessionStats.positive,
       sessionStats.negative,
     ];
     chartCount.update();
-
+    
+  
     // Logs para debug
     console.log("prediction:", prediction);
     console.log("sessionStats:", sessionStats);
@@ -184,7 +196,6 @@ document.addEventListener("DOMContentLoaded", () => {
     clearError();
 }
 
-  resetBtn?.addEventListener("click", resetSession);
 
 
   async function analyzeText() {
@@ -247,6 +258,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Esperado: { prediction: "positive"|"negative", probability: number }
       showResult(data.prediction, pos, neg);
+      addToHistory(text, data.prediction, pos);
+      renderHistory();
+
       updateCharts(pos, data.prediction);
     } catch (e) {
       showError(e.message ?? "Error desconocido");
@@ -254,6 +268,128 @@ document.addEventListener("DOMContentLoaded", () => {
       showLoading(false);
     }
   }
+
+  // Funciones de Historial (opcional)
+    // Limita un número al rango 0..1
+  function clamp01(n) {  // Evita errores si la API devuelve algo raro
+  const x = Number(n);
+  if (Number.isNaN(x)) return 0;
+  return Math.max(0, Math.min(1, x));
+  }
+    // Carga el historial desde localStorage
+  function loadHistory() {
+    try {
+      const raw = localStorage.getItem(HISTORY_KEY);
+      history = raw ? JSON.parse(raw) : [];
+      if (!Array.isArray(history)) history = [];
+    } catch {
+      history = [];
+    }
+  }
+    // Guarda el historial en localStorage
+  function saveHistory() {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  }
+
+    // Registro de Historial 
+
+  function addToHistory(text, prediction, posprobability){
+    const pos = clamp01(posprobability);
+    const neg = 1 - pos;
+
+    const item = {
+      timestamp: new Date().toISOString(),
+      text: String(text ?? ""),
+      prediction: String(prediction ?? ""),
+      positiveProbability: pos,
+      negativeProbability: neg,
+    };
+
+    history.unshift(item); // agrega al inicio
+    history = history.slice(0, HISTORY_LIMIT); // limita tamaño
+    saveHistory();
+  }
+
+
+  // Renderiza el historial en la UI (opcional)
+  function formatLocalData(iso){
+    try {
+      const d = new Date(iso);
+      return d.toLocaleString();
+    } catch {
+      return iso;
+    }
+  }
+
+  function badgeClass(prediction){
+    if (prediction === "positive") return "bg-success";
+    if (prediction === "negative") return "bg-danger";
+    return "bg-secondary";
+  }
+
+  function renderHistory() {
+    const tbody = document.getElementById("history-body");
+    if (!tbody) return;
+
+    tbody.innerHTML = ""; // limpia
+
+    for (const item of history){
+      const tr = document.createElement("tr"); // fila historial
+
+      const tdDate = document.createElement("td"); // columna fecha
+      tdDate.textContent = formatLocalData(item.timestamp); // formatea fecha
+
+      const tdText = document.createElement("td"); // columna texto
+
+      const t = item.text.trim(); // texto analizado
+      tdText.textContent = t.length > 50 ? t.slice(0, 50) + "..." : t; // recorta si es largo
+
+      const tdPrediction = document.createElement("td"); // columna predicción
+      const span = document.createElement("span"); // badge predicción
+      span.className = `badge ${badgeClass(item.prediction)}`; // clase según predicción
+      span.textContent = item.prediction || "-"; // texto predicción
+      tdPrediction.appendChild(span); // agrega badge a la celda
+
+      const tdPos = document.createElement("td"); // columna probabilidad
+      tdPos.textContent = `${(clamp01(item.positiveProbability) * 100).toFixed(1)}%`; // formatea probabilidad positiva
+
+      const tdNeg = document.createElement("td"); // columna probabilidad
+      tdNeg.textContent = `${(clamp01(item.negativeProbability)* 100).toFixed(1)}%`; // formatea probabilidad negativa 
+
+      tr.appendChild(tdDate);
+      tr.appendChild(tdText);
+      tr.appendChild(tdPrediction);
+      tr.appendChild(tdPos);
+      tr.appendChild(tdNeg);
+
+      tbody.appendChild(tr); // agrega fila al tbody
+    }
+  }
+
+  // ExportarJson
+
+  function exportHistoryJson() {
+    const blob = new Blob([JSON.stringify(history, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "sentiment_analysis_history.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // LimpiarHistorial
+  function clearHistory() {
+    history = [];
+    saveHistory();
+    renderHistory();
+  }
+
+  resetBtn?.addEventListener("click", resetSession);
+  $("btn-export-history")?.addEventListener("click", exportHistoryJson);
+  $("btn-clear-history")?.addEventListener("click", clearHistory);
+
 
   // Evento click del botón Analizar
   analyzeBtn.addEventListener("click", analyzeText);
@@ -265,5 +401,180 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  loadHistory();
+  renderHistory();
+
   console.log("✅ UI lista. Esperando análisis...");
+
+  // ======================================================
+  // CARGA DE CSV + RENDER EN DATATABLES (DataTables 2.x)
+  // - Parseo CSV con PapaParse (en Web Worker para rendimiento)
+  // - Renderizado eficiente con DataTables (paginación/orden/búsqueda)
+  // ======================================================
+
+  // -----------------------------
+  // Referencias a la tabla HTML
+  // -----------------------------
+  const csvTable = document.getElementById("csv_table");
+  // Variable global para almacenar la instancia de DataTable
+  let dataTablecsv = null;
+
+  // ======================================================
+  // Seguridad: escapeHtml
+  // ======================================================
+
+  /**
+   * Convierte caracteres especiales a entidades HTML.
+   * 
+   * ¿Por qué?
+   * - Si insertas texto externo (por ejemplo, nombres de columnas o datos del CSV)
+   *   usando innerHTML, existe el riesgo de inyectar HTML/JS (XSS).
+   * - Esta función asegura que lo que se inserta se renderice como texto.
+   *
+   * Ejemplo:
+   *   "<script>alert(1)</script>" => "&lt;script&gt;alert(1)&lt;/script&gt;"
+   *
+   * @param {any} value - Valor a convertir a texto y escapar
+   * @returns {string} - Texto seguro para insertar en HTML
+   */
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  // ======================================================
+  // Render / Update DataTable
+  // ======================================================
+
+  /**
+   * Renderiza los datos del CSV en DataTables.
+   * 
+   * Flujo:
+   * 1) Construye el <thead> con los nombres de columnas
+   * 2) Mapea columnas para DataTables usando { title, data }
+   * 3) Si DataTable ya existe: reemplaza data (clear + add + draw)
+   * 4) Si no existe: crea la instancia con opciones optimizadas
+   *
+   * @param {Array<Object>} datos - Arreglo de objetos; cada objeto es una fila del CSV.
+   * @param {Array<string>} columnas - Lista de nombres de columnas detectadas.
+   */
+
+  function renderCsvInDataTable(datos, columnas) {
+    // -----------------------------
+    // 1) Crear/actualizar encabezado (thead)
+    // -----------------------------
+    // Nota: DataTables usa el encabezado para ordenar, mostrar títulos, etc.
+    const headerElement = document.getElementById("tabla-header");
+    if (headerElement) {
+      headerElement.innerHTML =
+        `<tr>${columnas.map(c => `<th>${escapeHtml(c)}</th>`).join("")}</tr>`;
+    }
+
+    // -----------------------------
+    // 2) Definir columnas para DataTables
+    // -----------------------------
+    // Cada columna indica:
+    // - title: texto que muestra en header
+    // - data: nombre de propiedad en el objeto (fila)
+    // - defaultContent: valor por defecto si falta el dato
+
+    const dtColumns = columnas.map((c) => ({
+      title: c,
+      data: c,
+      defaultContent: "-",
+    }));
+
+    // -----------------------------
+    // 3) Si ya existe el DataTable, solo actualizamos data
+    // -----------------------------
+    // IMPORTANTE:
+    // - No existe "reload()" en DataTables cuando trabajas con data local.
+    // - El patrón correcto es clear() + rows.add() + draw()
+
+    if (dataTablecsv) {
+      dataTablecsv.clear().rows.add(datos).draw();
+      return;
+    }
+
+    // -----------------------------
+    // 4) Crear DataTable por primera vez
+    // -----------------------------
+    dataTablecsv = new DataTable(csvTable, {
+      data: datos,
+      columns: dtColumns,
+      
+      deferRender: true,
+      processing: true,
+      searchDelay: 300,
+
+      pageLength: 10,
+      lengthMenu: [10, 25, 50, 100, 250],
+      order: [],
+      scrollX: true,
+    });
+  }
+
+  // ======================================================
+  // Carga de CSV desde URL con PapaParse
+  // ======================================================
+
+  /**
+  * Carga un archivo CSV desde una URL y lo procesa con PapaParse.
+  *
+  * Puntos clave:
+  * - Se convierte la URL a absoluta (evita errores de "Invalid URL" en Web Workers)
+  * - download: true => PapaParse descarga el CSV por XHR/fetch
+  * - header: true => devuelve cada fila como objeto {col1: val1, col2: val2...}
+  * - worker: true => parseo en background (no congela la UI)
+  *
+  * @param {string} urlArchivoRel - Ruta relativa o URL del CSV
+  */
+
+  function loadcsv(urlArchivoRel) {
+    
+    // Convertimos a URL absoluta para que el Worker no “pierda” el contexto
+    // cuando el script corre desde una URL tipo blob:...
+    const urlArchivo = new URL(urlArchivoRel, window.location.href).href;
+
+    Papa.parse(urlArchivo, {
+      download: true,         // descarga el CSV desde la URL
+      header: true,           // interpreta primera fila como headers
+      skipEmptyLines: true,   // ignora filas vacías
+      worker: true,           // parseo en Web Worker (mejor performance)
+      complete: function (results) {
+        const datos = results.data || [];
+
+        // Validación rápida de contenido
+        if (!datos.length) {
+          console.warn("No hay datos en el archivo CSV");
+          return;
+        }
+
+        // Obtiene columnas desde meta.fields si existe, sino desde el primer objeto
+        const columnas = results?.meta?.fields ?? Object.keys(datos[0] || {});
+        console.log(`CSV cargado: ${datos.length} filas`, { columnas });
+
+        // Renderiza o actualiza la tabla
+        renderCsvInDataTable(datos, columnas);
+      },
+      error: function (err) {
+        console.error("Error al cargar el CSV:", err);
+      }
+    });
+  }
+
+  // ======================================================
+  // Ejecución inicial
+  // ======================================================
+
+  // Ruta del CSV (relativa al sitio)
+  const urlArchivo = 'assets/documents/df_core_clean.csv';
+  // Dispara la carga al iniciar la página
+  loadcsv(urlArchivo);
+
 });
+      
