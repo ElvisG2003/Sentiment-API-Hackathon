@@ -270,4 +270,175 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   console.log("✅ UI lista. Esperando análisis...");
+
+  // ======================================================
+  // CARGA DE CSV + RENDER EN DATATABLES (DataTables 2.x)
+  // - Parseo CSV con PapaParse (en Web Worker para rendimiento)
+  // - Renderizado eficiente con DataTables (paginación/orden/búsqueda)
+  // ======================================================
+
+  // -----------------------------
+  // Referencias a la tabla HTML
+  // -----------------------------
+  const csvTable = document.getElementById("csv_table");
+  // Variable global para almacenar la instancia de DataTable
+  let dataTablecsv = null;
+
+  // ======================================================
+  // Seguridad: escapeHtml
+  // ======================================================
+
+  /**
+   * Convierte caracteres especiales a entidades HTML.
+   * 
+   * ¿Por qué?
+   * - Si insertas texto externo (por ejemplo, nombres de columnas o datos del CSV)
+   *   usando innerHTML, existe el riesgo de inyectar HTML/JS (XSS).
+   * - Esta función asegura que lo que se inserta se renderice como texto.
+   *
+   * Ejemplo:
+   *   "<script>alert(1)</script>" => "&lt;script&gt;alert(1)&lt;/script&gt;"
+   *
+   * @param {any} value - Valor a convertir a texto y escapar
+   * @returns {string} - Texto seguro para insertar en HTML
+   */
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  // ======================================================
+  // Render / Update DataTable
+  // ======================================================
+
+  /**
+   * Renderiza los datos del CSV en DataTables.
+   * 
+   * Flujo:
+   * 1) Construye el <thead> con los nombres de columnas
+   * 2) Mapea columnas para DataTables usando { title, data }
+   * 3) Si DataTable ya existe: reemplaza data (clear + add + draw)
+   * 4) Si no existe: crea la instancia con opciones optimizadas
+   *
+   * @param {Array<Object>} datos - Arreglo de objetos; cada objeto es una fila del CSV.
+   * @param {Array<string>} columnas - Lista de nombres de columnas detectadas.
+   */
+
+  function renderCsvInDataTable(datos, columnas) {
+    // -----------------------------
+    // 1) Crear/actualizar encabezado (thead)
+    // -----------------------------
+    // Nota: DataTables usa el encabezado para ordenar, mostrar títulos, etc.
+    const headerElement = document.getElementById("tabla-header");
+    if (headerElement) {
+      headerElement.innerHTML =
+        `<tr>${columnas.map(c => `<th>${escapeHtml(c)}</th>`).join("")}</tr>`;
+    }
+
+    // -----------------------------
+    // 2) Definir columnas para DataTables
+    // -----------------------------
+    // Cada columna indica:
+    // - title: texto que muestra en header
+    // - data: nombre de propiedad en el objeto (fila)
+    // - defaultContent: valor por defecto si falta el dato
+
+    const dtColumns = columnas.map((c) => ({
+      title: c,
+      data: c,
+      defaultContent: "-",
+    }));
+
+    // -----------------------------
+    // 3) Si ya existe el DataTable, solo actualizamos data
+    // -----------------------------
+    // IMPORTANTE:
+    // - No existe "reload()" en DataTables cuando trabajas con data local.
+    // - El patrón correcto es clear() + rows.add() + draw()
+
+    if (dataTablecsv) {
+      dataTablecsv.clear().rows.add(datos).draw();
+      return;
+    }
+
+    // -----------------------------
+    // 4) Crear DataTable por primera vez
+    // -----------------------------
+    dataTablecsv = new DataTable(csvTable, {
+      data: datos,
+      columns: dtColumns,
+      
+      deferRender: true,
+      processing: true,
+      searchDelay: 300,
+
+      pageLength: 10,
+      lengthMenu: [10, 25, 50, 100, 250],
+      order: [],
+      scrollX: true,
+    });
+  }
+
+  // ======================================================
+  // Carga de CSV desde URL con PapaParse
+  // ======================================================
+
+  /**
+  * Carga un archivo CSV desde una URL y lo procesa con PapaParse.
+  *
+  * Puntos clave:
+  * - Se convierte la URL a absoluta (evita errores de "Invalid URL" en Web Workers)
+  * - download: true => PapaParse descarga el CSV por XHR/fetch
+  * - header: true => devuelve cada fila como objeto {col1: val1, col2: val2...}
+  * - worker: true => parseo en background (no congela la UI)
+  *
+  * @param {string} urlArchivoRel - Ruta relativa o URL del CSV
+  */
+
+  function loadcsv(urlArchivoRel) {
+    
+    // Convertimos a URL absoluta para que el Worker no “pierda” el contexto
+    // cuando el script corre desde una URL tipo blob:...
+    const urlArchivo = new URL(urlArchivoRel, window.location.href).href;
+
+    Papa.parse(urlArchivo, {
+      download: true,         // descarga el CSV desde la URL
+      header: true,           // interpreta primera fila como headers
+      skipEmptyLines: true,   // ignora filas vacías
+      worker: true,           // parseo en Web Worker (mejor performance)
+      complete: function (results) {
+        const datos = results.data || [];
+
+        // Validación rápida de contenido
+        if (!datos.length) {
+          console.warn("No hay datos en el archivo CSV");
+          return;
+        }
+
+        // Obtiene columnas desde meta.fields si existe, sino desde el primer objeto
+        const columnas = results?.meta?.fields ?? Object.keys(datos[0] || {});
+        console.log(`CSV cargado: ${datos.length} filas`, { columnas });
+
+        // Renderiza o actualiza la tabla
+        renderCsvInDataTable(datos, columnas);
+      },
+      error: function (err) {
+        console.error("Error al cargar el CSV:", err);
+      }
+    });
+  }
+
+  // ======================================================
+  // Ejecución inicial
+  // ======================================================
+
+  // Ruta del CSV (relativa al sitio)
+  const urlArchivo = 'assets/documents/df_core_clean.csv';
+  // Dispara la carga al iniciar la página
+  loadcsv(urlArchivo);
+
 });
