@@ -8,14 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.util.Map;
-
-
 
 
 @RestControllerAdvice
@@ -55,19 +47,5 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(
                         "Error interno del servidor", 500));
     }
-
-    @ExceptionHandler(DsServiceUnavailableException.class)
-    public ResponseEntity<Map<String, String>> handleDsDown(DsServiceUnavailableException ex) {
-
-        return ResponseEntity
-                .status(HttpStatus.SERVICE_UNAVAILABLE) // 503
-                .body(Map.of(
-                        "error", "Servicio de análisis no disponible",
-                        "detail", "Intente nuevamente más tarde"
-                ));
-    }
-
-
-
 }
 
