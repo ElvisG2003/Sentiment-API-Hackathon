@@ -24,7 +24,7 @@ Se usan 3 componentes principales para crear un sistema de clasificacion binaria
 Con esto, se entrega:
 
 - `prediction`: `"positive"` / `"negative"`
-- `label`: `1` (positive) / `1` (negative)
+- `label`: `1` (positive) / `0` (negative)
 - `probability`: probabilidad **de que el resultado sea positivo** (0.0-1.0)
 
 > Como extra el backend expone dos datos extras para un mejor entendimiento
@@ -46,6 +46,12 @@ Cliente → **Spring Boot API** → **FastAPI (DS)** → Modelo (TF-IDF + Logist
 - Maven (o usar `./mvnw`)
 - Python 3.12
 - Pip
+
+### Puertos por defecto:
+
+* FastAPI (DS): `http://localhost:8000`
+* Backend (Spring): `http://localhost:8080`
+* Web UI: Live Server (`http://127.0.0.1:5500`)
 
 ### 1) Levantar Data Science (FastAPI)
 
@@ -106,15 +112,19 @@ cd backend
 * Response:
 ```JSON
   { 
-    "label": 1, "probability": 0.93 
-    "prediction": 
-    "probability":
+    "label": 1,
+    "negativeProbability": 0.23,
+    "positiveProbability": 0.97, 
+    "prediction": "positive",
+    "probability": 0.97 
   }
 ```
 ---
 
 ### Levantar web-UI
-Usar Live Server en VSCode
+1. Abrir carpeta `web-ui/` en VSCode
+2. Usar Live Server en `web-ui/index.html`
+3. Probar análisis desde la UI
 
 ---
 

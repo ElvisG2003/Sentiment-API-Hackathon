@@ -4,7 +4,11 @@
 ### Backend — Spring Boot (API pública)
 - Recibe requests HTTP (JSON)
 - Valida el texto
-- Devuelve `{prediction, probability}`
+- Hace el llamado al microservicio DS (FastAPI) mediante `SentimentModelClient`
+- Devuelve: 
+    * `prediction`, `label`, `probability`
+    * ademas de `positiveProbability` y `negativeProbability` para interpretación
+
 - Puede usar:
   - **Mock client** (sin DS)
   - **FastAPI client** (llama microservicio real)
@@ -12,7 +16,9 @@
 ### Data Science — FastAPI (microservicio interno)
 - Carga artefactos de modelo desde `data-science/artifacts/`
 - Expone `POST /predict` para inferencia
+- Expone endpoints de health
 
+---
 
 ## Puertos y endpoints
 
@@ -33,7 +39,7 @@
 
 1) **Cliente** envía `POST /sentiment` al backend con:
 ```json
-{ "text": "..." }
+{ "text": "I love this product" }
 ```
 2) **Controller** (Spring Boot)
 * Valida el input`(@Valid)`
@@ -62,11 +68,20 @@
 5) El **backend adapta** la respuesta al formato publico:
 * `label=1 -> "positive"`
 * `label=0 -> "negative"`
-* `probability` se entrega sin cambios
+* `probability`
+* `positiveProbability = probability`
+* `negativeProbability = 1 - probability`
 
 Respuesta publica:
+
 ```json
-    { "prediction": "positive|negative", "probability": 0.xx }
+    {
+        "label": 1,
+        "prediction": "positive",
+        "probability": 0.93,
+        "positiveProbability": 0.93,
+        "negativeProbability": 0.07
+    }
 ```
 
 ---
@@ -89,6 +104,7 @@ Archivo:
 ### Backend
 * **400**: validacion -> ErrorResponse con `details`
 * **400**: JSON mal formado -> ErrorResponse `"Malformed JSON request"`
+* **503**: DS no disponible / error de integración
 * **500**: error inesperado -> ErrorResponse `"Internal server error"`
 
 ### Data Science

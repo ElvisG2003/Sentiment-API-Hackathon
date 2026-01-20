@@ -49,7 +49,9 @@ Este documento busca definir el contrato entre 2 APIs:
 {
   "label": 0,
   "prediction": "negative",
-  "probability": 0.82
+  "probability": 0.82,
+  "positiveProbability": 0.18,
+  "negativeProbability": 0.82
 }
 ```
 
@@ -85,11 +87,19 @@ Este documento busca definir el contrato entre 2 APIs:
 #### 400 Malformed JSON request
 - Cuando el JSON viene roto 
 
+#### 503 Model service error
+- FastAPI caído/no disponible
+
 #### 500 internal server error
 - Error inesperado (no exponemos datos sensibles)
 
 
 ## 2) Data Science (FastAPI)
+
+### Url Base (local)
+
+-  `http://localhost:8000`
+
 
 ### 2.1 POST `/predict`
 - Devuelve etiqueta binaria y probabilidad.
@@ -97,10 +107,7 @@ Este documento busca definir el contrato entre 2 APIs:
 #### Request(JSON)
 ```json
 {
-  "error": "DS_UNAVAILABLE",
-  "message": "Data Science service not reachable"
-  "prediction": "positive",
-  "probability": 0.82
+  "text": "I love this product"
 }
 ```
 

@@ -13,28 +13,35 @@ El sistema entrega una clasificación **binaria**: **positivo / negativo**, usan
 		- `1` = Positivo
 	- Microservicio de Data Science para inferencia (prediccion) vía API
 	- Backend en Spring Boot para exponer la API publica, validar requests y orquestar llamadas
+	- Web UI estatica para demo end-to-end
 	- Documentacion de arquitectura, contrato API y roadmap
 
 ### No incluye (Por ahora)
 	- Autenticacion y autorizacion
-	- Panel web completo
+	- Persistencia/DB
 	- Entrenamiento automatico/continuo
+	- Dashboard analitico completo
 
 ---
+
 ## 3. Arquitectura 
 
 **Componentes principales**
 - **Data Science Service (FastAPI)**
 	- Carga el modelo entrenado
 	- Expone endpoints de predicción
-	- Devuelve: clase (0/1) + probabilidad 
-* **Backend (Spring Boot)**
-	* Expone endpoints públicos para el cliente
-	* Valida input y formatea respuestas 
-	* Llama al microservicio DS y devuelve el resultado al cliente 
+	- Devuelve: `label` (0/1) + `probability`
+- **Backend (Spring Boot)**
+	- Expone endpoints públicos para el cliente
+	- Valida input y formatea respuestas 
+	- Llama al microservicio DS y devuelve el resultado al cliente 
+- **Web UI**
+	- Interfaz demo para enviar texto y visualizar resultados
+
 -> Detalle: `docs/Arquitectura.md`
 
 ---
+
 ## 4. Flujo end-to-end 
 
 1) Cliente envía un comentario al Backend
@@ -47,6 +54,7 @@ El sistema entrega una clasificación **binaria**: **positivo / negativo**, usan
 6) (Opcional) Se registra en DB o logs para auditoría/analítica
 
 ---
+
 ## 5. Clasificación binaria y uso de probabilidad 
 
 ### Etiquetas 
@@ -55,20 +63,23 @@ El dataset se normalizo a valores **0/1** para simplificar y evitar ambigüedade
 - `1` -> Positivo
 
 ### Probabilidad
-Además de la clase, el sistema puede usar la **probabilidad**  del modelo para filtrar casos, ej:
-	- Negativo con probabilidad muy alta -> "negativo fuerte" por ende, sin feedback
-	- Negativo con probabilidad media -> "posible constructivo" prioridad de revisión
+Ademas de la clase, el sistema entrega la **probabilidad** de la clase positiva, util para:
+
+- Priorizar revision manual
+- umbral de "confianza" para reducir falsos positivos/negativos
+
+---
 
 ## 6. Data Science / Modelo
 - Vectorización: **TF-IDF**
 - Modelo: **Logistic Regression**
-- Dataset: CSV con etiquetas 0/1
-
--> Documentar: fuentes del dataset, tamaño aproximado, balance de clases, y reglas de limpieza
+- Experimentos: modelos alternos (ej. Svm, Naive Bayes)
 
 ---
+
 ## 7. Contrato de API
--> Documento único de verdad: `docs/api_contract.md`
+-> Documento único: `docs/api_contract.md`
+
 Debe incluir:
 - Endpoints
 - Request/Response JSON
