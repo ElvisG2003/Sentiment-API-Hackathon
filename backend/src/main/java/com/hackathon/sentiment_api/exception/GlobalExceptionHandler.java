@@ -74,6 +74,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleNotReadable(HttpMessageNotReadableException ex,
                                                            HttpServletRequest request) {
+
+
+        log.warn("Error de validación: {}", ex.getMessage());
         ErrorResponse body = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 "Malformed JSON request", //El mensaje es claro
@@ -92,7 +95,7 @@ public class GlobalExceptionHandler {
 
         // Debido a que no tenemos detalles del error, no damos datos reales
         // Para mas profesionalismo usamos un logger
-        log.error("Unhandled error at {}", request.getRequestURI(), ex);
+        log.error("Error interno del servidor en {}", request.getRequestURI(), ex);
 
         ErrorResponse body = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(), //500
