@@ -511,8 +511,8 @@ document.addEventListener("DOMContentLoaded", () => {
       processing: true,
       searchDelay: 300,
 
-      pageLength: 10,
-      lengthMenu: [10, 25, 50, 100, 250],
+      pageLength: 5,
+      lengthMenu: [5, 10, 25, 50, 100, 250],
       order: [],
       scrollX: true,
     });
