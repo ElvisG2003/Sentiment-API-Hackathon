@@ -1,0 +1,26 @@
+.bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+    }
+
+    @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+        }
+    }
+    .btn-morado {
+    background-color: #6f42c1; /* Un tono morado común */
+    border-color: #6f42c1;
+    color: white; /* Color de texto blanco para contraste */
+    }
+    .btn-morado:hover {
+          background-color: #5a3e9f; /* Un tono más oscuro al pasar el ratón */
+        border-color: #5a3e9f;
+    }
+
+    .chart-container {
+      height: 300px; /* Altura fija para el contenedor del gráfico */
+    }
