@@ -3,6 +3,12 @@
 package com.hackathon.sentiment_api.model;
 // Importamos para ignorar campos extras cuando parseamos JSON
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+// Importamos para manejar nodos JSON
+import com.fasterxml.jackson.databind.JsonNode;
+// Importamos para mapear JSON a objetos
+import com.fasterxml.jackson.databind.ObjectMapper;
+// Importamos para deserializar nodos JSON
+import com.fasterxml.jackson.databind.deser.std.JsonNodeDeserializer;
 // Importamos para leer valores de application.properties
 import org.springframework.beans.factory.annotation.Value;
 // Importamos para activar la clase solo si una propiedad esta activa
@@ -18,8 +24,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 // Importamos para configurar timeouts
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+// Importamos para manejar excepciones de acceso a recursos
+import org.springframework.web.client.ResourceAccessException;
+// Importamos para manejar excepciones de respuestas HTTP
+import org.springframework.web.client.RestClientResponseException;
 // Importamos para manejar unidades de tiempo
 import java.util.concurrent.TimeUnit;
+// Importamos nuestra interfaz
+import com.hackathon.sentiment_api.exception.InvalidTextException;
+// Importamos nuestra interfaz de mensajes de error
+import com.hackathon.sentiment_api.exception.ModelServiceExceptionMesagge;
 
 
 @Component
@@ -30,6 +44,19 @@ public class FastApiSentimentModelClient implements SentimentModelClient {
     private final String baseUrl;
     // Guardamos un RestClient con una base url
     private final RestClient restClient;
+    private static final ObjectMapper MAPPER = new ObjectMapper(); // Mapeador JSON
+
+    private String extractDetail (String body){
+        if (body == null || body.isBlank()) return "Sin detalles";
+        try {
+            JsonNode node = MAPPER.readTree(body);
+            // Extraemos el campo "detail" si existe
+            if (node.has("detail") && !node.get("detail").isNull()) return node.get("detail").asText();
+            else return "Sin detalles";
+        } catch (Exception e){ // Si hay error al parsear, devolvemos null
+            return null;
+        }
+    }
  
 
     // Constructo Spring que da la property
@@ -65,14 +92,37 @@ public ModelResult predict(String text){
 
         // si no hay respuesta
         if (resp == null){
-            throw new RuntimeException("Ds service returned empty response");
+            throw new ModelServiceExceptionMesagge("El servicio DS devolvio una respuesta vacía");
         }
         // Convertimos la respuesta al formato de nuestra interfaz
         return new ModelResult(resp.label(), resp.probability());
 
-    }finally{
-        long ms = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - t0);
-        log.info("DS FastAPI call to {}/predict took {} ms", baseUrl, ms);
+    } catch (RestClientResponseException ex) {
+        int statusCode = ex.getStatusCode().value();// Codigo de estado HTTP
+        String detail = extractDetail(ex.getResponseBodyAsString());
+
+        // Manejo de errores basado en el código de estado HTTP
+        if (statusCode == 422){
+            String msg = (detail != null)
+             ? detail 
+             : "Texto inválido para análisis de sentimiento.";
+            throw new InvalidTextException(msg);
+        }
+        if (statusCode == 503){
+             String msg = (detail != null) 
+             ? detail 
+             : "El modelo DS aún no esta disponible, intente más tarde.";
+            throw new ModelServiceExceptionMesagge(msg);
+        }
+
+        String msg = (detail != null)
+             ? detail 
+             : "Error del servicio DS.(HTTP " + statusCode +").";
+        throw new ModelServiceExceptionMesagge(msg);
+    }finally {
+        long msg = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - t0);
+        log.info("Tiempo de respuesta de DS: {}/predict ms", baseUrl, msg);
+
     }
 }
 

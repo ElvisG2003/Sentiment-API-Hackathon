@@ -52,10 +52,16 @@ public class SentimentService {
         SentimentModelClient.ModelResult result; // Clase interna para representar el resultado del modelo
         try {
             result = modelClient.predict(normalized);
-        } catch (Exception e) {
+        }catch(InvalidTextException ex){
+            // Error 400 del modelo, re-lanzamos la excepcion
+            throw ex;
+        } catch(ModelServiceExceptionMesagge ex){
+            // Error 503 del modelo, re-lanzamos la excepcion
+            throw ex;
+        }catch (Exception ex) {
             // Captura cualquier excepcion al llamar al servicio del modelo y lo vuelve 503
-            log.error("Error al llamar al servicio del modelo DS", e);
-            throw new ModelServiceExceptionMesagge("Error al comunicarse con el servicio, informar o intenar mas tarde.", e);
+            log.error("Error al llamar al servicio del modelo DS", ex);
+            throw new ModelServiceExceptionMesagge("Error al comunicarse con el servicio, informar o intenar mas tarde.", ex);
         }
 
         String prediction = mapLabelToPrediction(result.label());
