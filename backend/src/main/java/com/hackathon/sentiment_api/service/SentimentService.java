@@ -33,6 +33,8 @@ public class SentimentService {
 
     public SentimentResponse predict(String text) {
 
+        log.debug("Analizando texto");
+
         // Normalizacion del texto
         String normalized = normalize(text);
 
@@ -45,6 +47,7 @@ public class SentimentService {
         boolean hasLetterOrDigit = normalized.codePoints().anyMatch(Character::isLetterOrDigit); // Verifica si hay al menos una letra o digito
 
         if (!hasLetterOrDigit) { // Si no hay letras ni digitos, lanza excepcion
+            log.warn("Texto recibido inválido");
             throw new InvalidTextException("El texto debe contener al menos una letra o un número.");
         }
 
