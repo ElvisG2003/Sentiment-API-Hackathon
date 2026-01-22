@@ -77,7 +77,7 @@ public class GlobalExceptionHandler {
 
 
         log.warn("Malformed JSON request en {}", request.getRequestURI()); // Alerta en logs
-        log.debug("Detalle tecnico de Json malformado", ex); // Para debuguear
+        log.debug("Detalle técnico de Json malformado", ex); // Para debuguear
         ErrorResponse body = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 "Malformed JSON request", //El mensaje es claro

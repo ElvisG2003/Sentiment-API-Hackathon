@@ -29,7 +29,7 @@ public class SentimentController {
     * si todo sale bien, devuelve HTTP 200 */
     @PostMapping
     public ResponseEntity<SentimentResponse> predict(@RequestBody @Valid SentimentRequest request) {
-        log.info("POST /sentiment recibido");
+        log.debug("POST /sentiment recibido");
         SentimentResponse response = this.sentimentService.predict(request.getText());
         return ResponseEntity.ok(response);
     }
