@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClient;
 
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -24,9 +25,15 @@ public class SentimentController {
     private final SentimentService sentimentService;
 
     private final SentimentModelClient modelClient; // Cliente del modelo
+
+    @Value("${sentiment.ds.health-check.enabled:true}")
+    private boolean dsHealthCheckEnabled;
+
+
     // Se inyecta la property de la URL del DS
     @Value("${sentiment.ds.base-url:http://localhost:8000}")
     private String dsBaseUrl; 
+
 
     private static final Logger log = LoggerFactory.getLogger(SentimentController.class);
 
@@ -62,13 +69,12 @@ public class SentimentController {
         Map<String, Object> out = new LinkedHashMap<>(); // Mantiene el orden de inserción
         out.put("backend", "ok");  
         out.put("modelClient", modelClient.getClass().getSimpleName());
-
-        // Si el cliente del modelo no es FastAPI, saltamos la comprobación
-        if (!"FastApiSentimentModelClient".equals(modelClient.getClass().getSimpleName())) {
+        
+        if (!dsHealthCheckEnabled) {
             out.put("ds", "skipped");
             return ResponseEntity.ok(out);
         }
-        // Comprobamos la salud del servicio FastAPI
+        // Comprobamos la salud del servicio FastAPI 
         try {
             RestClient rc = RestClient.create(dsBaseUrl);
             Map<?, ?> ds = rc.get().uri("/health").retrieve().body(Map.class);
