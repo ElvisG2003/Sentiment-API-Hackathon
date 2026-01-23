@@ -9,9 +9,15 @@ import joblib
 import json
 # Re es de regex, para limpiar texto
 import re
+# Logging para mensajes de log
+import logging
+
 
 # Creamos la API con nombre y versión
 app = FastAPI(title="Sentiment Analysis API", version="1.0.0")
+
+# Configuramos el logger para usar el de uvicorn
+logger = logging.getLogger("uvicorn.error")
 
 #Obtenemos el directorio actual
 SERVICE_DIR = Path(__file__).resolve().parent
@@ -150,7 +156,8 @@ def predict(req: PredictRequest):
         # Si cualquier error es dado, devolvemos 500 pero sin exponer datos
         proba_pos = MODEL.predict_proba([cleaned])[0][1]
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error during prediction: {str(e)}")
+        logger.exception("Error during model prediction")
+        raise HTTPException(status_code=500, detail=f"Error during prediction.")
     
     # Aplicamos el threshold para obtener la etiqueta
     label = 1 if proba_pos >= THRESHOLD else 0
