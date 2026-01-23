@@ -76,7 +76,14 @@ public class SentimentController {
         }
         // Comprobamos la salud del servicio FastAPI 
         try {
-            RestClient rc = RestClient.create(dsBaseUrl);
+            var requestFactory = new org.springframework.http.client.SimpleClientHttpRequestFactory();
+            requestFactory.setConnectTimeout(java.time.Duration.ofSeconds(2)); // 2 segundos
+            requestFactory.setReadTimeout(java.time.Duration.ofSeconds(2)); // 2 segundos
+
+            RestClient rc = RestClient.builder()
+                    .requestFactory(requestFactory)
+                    .baseUrl(dsBaseUrl)
+                    .build();
             Map<?, ?> ds = rc.get().uri("/health").retrieve().body(Map.class);
             out.put("ds", ds != null ? ds : Map.of("status", "unknown"));
             return ResponseEntity.ok(out);
