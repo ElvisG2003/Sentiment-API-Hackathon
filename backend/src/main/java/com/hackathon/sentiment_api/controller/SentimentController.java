@@ -76,6 +76,7 @@ public class SentimentController {
         }
         // Comprobamos la salud del servicio FastAPI 
         try {
+            // Se modifica para evitar riesgo de "cuelgue"
             var requestFactory = new org.springframework.http.client.SimpleClientHttpRequestFactory();
             requestFactory.setConnectTimeout(java.time.Duration.ofSeconds(2)); // 2 segundos
             requestFactory.setReadTimeout(java.time.Duration.ofSeconds(2)); // 2 segundos
