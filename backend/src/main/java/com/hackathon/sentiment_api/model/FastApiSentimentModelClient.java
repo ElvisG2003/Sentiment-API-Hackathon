@@ -2,38 +2,23 @@
 // Definimos donde vive el paquete
 package com.hackathon.sentiment_api.model;
 // Importamos para ignorar campos extras cuando parseamos JSON
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-// Importamos para manejar nodos JSON
 import com.fasterxml.jackson.databind.JsonNode;
-// Importamos para mapear JSON a objetos
 import com.fasterxml.jackson.databind.ObjectMapper;
-// Importamos para deserializar nodos JSON
-import com.fasterxml.jackson.databind.deser.std.JsonNodeDeserializer;
-// Importamos para leer valores de application.properties
-import org.springframework.beans.factory.annotation.Value;
-// Importamos para activar la clase solo si una propiedad esta activa
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-// Importamos para decir que enviamos JSON
-import org.springframework.http.MediaType;
-// Component para que Spring lo detecte como un Bean
-import org.springframework.stereotype.Component;
-// RestClient para hacer llamadas HTTP
-import org.springframework.web.client.RestClient;
-// Importamos para logging
+import com.hackathon.sentiment_api.exception.InvalidTextException;
+import com.hackathon.sentiment_api.exception.ModelServiceExceptionMesagge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-// Importamos para configurar timeouts
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
-// Importamos para manejar excepciones de acceso a recursos
-import org.springframework.web.client.ResourceAccessException;
-// Importamos para manejar excepciones de respuestas HTTP
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientResponseException;
-// Importamos para manejar unidades de tiempo
+
 import java.util.concurrent.TimeUnit;
-// Importamos nuestra interfaz
-import com.hackathon.sentiment_api.exception.InvalidTextException;
-// Importamos nuestra interfaz de mensajes de error
-import com.hackathon.sentiment_api.exception.ModelServiceExceptionMesagge;
 
 
 @Component
@@ -119,9 +104,11 @@ public ModelResult predict(String text){
              ? detail 
              : "Error del servicio DS.(HTTP " + statusCode +").";
         throw new ModelServiceExceptionMesagge(msg);
+    }catch(Exception ex){
+        throw new ModelServiceExceptionMesagge("Error al conectar con el servicio DS, verifique que DS este conectado."  );
     }finally {
-        long msg = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - t0);
-        log.info("Tiempo de respuesta de DS: {}/predict ms", baseUrl, msg);
+        long passMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - t0);
+        log.info("Tiempo de respuesta de DS: {}/predict {} ms", baseUrl, passMs);
 
     }
 }
