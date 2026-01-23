@@ -7,7 +7,7 @@ public class SentimentRequest {
     private @NotBlank(
             message = "El texto no puede estar vacio"
     ) @Size(
-            min = 3,
+            min = 3, max = 5000,
             message = "El texto debe tener al menos 3 caracteres"
     ) String text;
 

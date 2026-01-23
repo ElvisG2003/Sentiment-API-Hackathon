@@ -12,7 +12,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -49,7 +51,10 @@ public class SentimentControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"text\":\"aa\"}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400));
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").exists())
+                .andExpect(jsonPath("$.path").value("/sentiment"))
+                .andExpect(jsonPath("$.details").exists());
     }
 
     @Test
@@ -61,6 +66,37 @@ public class SentimentControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"text\":\"!!!@@@###\"}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400));
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.path").value("/sentiment"));
     }
+
+    @Test
+    void predict_tooLong_return400() throws Exception {
+        String longText = "a".repeat(5001);
+
+        mvc.perform(post("/sentiment")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"text\":\"" + longText + "\"}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.path").value("/sentiment"))
+                .andExpect(jsonPath("$.details").exists());
+    }
+
+    @Test
+    void health_return200_OK() throws Exception {
+        mvc.perform(get("/sentiment/health"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.equalToIgnoringCase("OK"))); // El "ok" simple no funciona, se cambia a un ignoringcase para forzar el match
+    }
+
+    @Test
+    void healthDeps_whenNotFastApiClient_return200_andSkipped() throws Exception {
+        mvc.perform(get("/sentiment/health/deps"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.backend").value("ok"))
+                .andExpect(jsonPath("$.modelClient").exists())
+                .andExpect(jsonPath("$.ds").value("skipped"));
+    }
+
 }
