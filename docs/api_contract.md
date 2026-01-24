@@ -18,8 +18,50 @@ Este documento busca definir el contrato entre 2 APIs:
 **GET** `/sentiment/health`
 
 #### Response 200 (text)
-```text
+{
   OK
+}
+
+
+---
+
+### **GET** `/sentiment/health/deps`
+- Verifica el estado del backend y la conectividad del FastAPI.
+
+**Notas**
+- Si el cliente es `Mock`, el estado de DS no es relevante 
+- Si el cliente es `FastAPI` y el `sentiment.ds.health-check.enabled=true`, se debe consultar `Get {sentiment.ds.base-url}/health`
+- Si Ds no responde, el endpoint deberia reflejarlo
+
+#### Response 200 (application/json) - Activado Health-check
+
+```json
+{
+  "backend":"ok",
+  "modelClient": "FastApiSentimentModelClient",
+  "ds":{"status": "ok"}
+}
+```
+
+#### Response 200 (application/json) - Desactivado Health-check
+
+```json
+{
+  "backend":"ok",
+  "modelClient": "FastApiSentimentModelClient",
+  "ds":"skipped"
+}
+```
+
+#### Response 503 (application/json) - DS Apagado/inaccesible
+
+```json
+{
+  "backend":"ok",
+  "modelClient": "FastApiSentimentModelClient",
+  "ds":{"down"},
+  "error":"DS unreachable"
+}
 ```
 
 ---

@@ -12,8 +12,11 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.time.OffsetDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import javax.print.DocFlavor.STRING;
 
 // Manejo general de excepciones: convierte errores en respuestas JSON consistentes
 @RestControllerAdvice //Controller intercepta las excepciones de la API
@@ -52,14 +55,16 @@ public class GlobalExceptionHandler {
     // Este error es cuando la validacion basica se supera, pero no cumple una regla del dominio
     //Ej: "El texto solo tiene emojis", "Texto generico sin analisis", etc.
     @ExceptionHandler(InvalidTextException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidText(InvalidTextException ex,
-                                                           HttpServletRequest request) {
-        ErrorResponse body = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(), //400
-                ex.getMessage(),                //Mensaje controlado por nosotros
-                request.getRequestURI(),
-                Map.of()                        //detalle vacio
-        );
+    public ResponseEntity<Map<String, Object>> handleInvalidText(InvalidTextException ex,
+                                                          HttpServletRequest request) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", OffsetDateTime.now().toString());
+        body.put("status", 400);
+        body.put("error", ex.getMessage());
+        body.put("path", request.getRequestURI());
+
+        // antes: Map.of()
+        body.put("details", Map.of("text", ex.getMessage()));
 
         return ResponseEntity.badRequest().body(body);
     }

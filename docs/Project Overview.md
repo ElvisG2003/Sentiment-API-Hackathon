@@ -38,7 +38,7 @@ El sistema entrega una clasificación **binaria**: **positivo / negativo**, usan
 - **Web UI**
 	- Interfaz demo para enviar texto y visualizar resultados
 
--> Detalle: `docs/Arquitectura.md`
+-> Detalle: `docs/arquitectura.md`
 
 ---
 

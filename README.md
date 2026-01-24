@@ -113,7 +113,7 @@ cd backend
 ```JSON
   { 
     "label": 1,
-    "negativeProbability": 0.23,
+    "negativeProbability": 0.03,
     "positiveProbability": 0.97, 
     "prediction": "positive",
     "probability": 0.97 
@@ -125,6 +125,12 @@ cd backend
 1. Abrir carpeta `web-ui/` en VSCode
 2. Usar Live Server en `web-ui/index.html`
 3. Probar análisis desde la UI
+
+---
+
+## Testing 
+- Para la demo y validación rapida del sistema (DS+API+WEB-UI), seguir en plan en:
+- `docs/testing.md`
 
 ---
 
