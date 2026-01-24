@@ -47,6 +47,8 @@ Herramientas recomendadas:
     }
 ```
 
+![PruebaDsHealth](img/DS-Health.png)
+
 ### 4.2 DS Predict Positive 
 **POST** `${DS_BASE}/predict`
 ```json
@@ -61,6 +63,7 @@ Herramientas recomendadas:
 	    "probability": 0.9774638528398151
     }
 ```
+![PruebaDsPOS](img/DS-Predict-POS.png)
 
 ### 4.3 DS Predict Negative 
 **POST** `${DS_BASE}/predict`
@@ -78,6 +81,8 @@ Herramientas recomendadas:
     }
 ```
 
+![PruebaDsNEG](img/DS-Predict-NEG.png)
+
 ---
 
 ## 5) Smoke Tests (API)
@@ -91,6 +96,8 @@ Herramientas recomendadas:
         "status":"OK"
     }
 ```
+![PruebaAPIHealth](img/API-Health.png)
+
 
 ### 5.2 API Dependencies Health
 **GET** `${API_BASE}/sentiment/health/deps`
@@ -106,6 +113,8 @@ Herramientas recomendadas:
 	    }
     }
 ```
+
+![PruebaAPIHealthDep](img/API-Health-Deps.png)
 
 ### 5.3 API Predict Positive
 **POST** `${API_BASE}/sentiment`
@@ -125,6 +134,8 @@ Herramientas recomendadas:
     }
 ```
 
+![PruebaAPIPredictPOS](img/API-prediction-POS.png)
+
 ### 5.4 API Predict Negative
 **POST** `${API_BASE}/sentiment`
 ```json
@@ -142,6 +153,8 @@ Herramientas recomendadas:
 	    "positiveProbability": 0.039714164896929034
     }
 ```
+
+![PruebaAPIPredictNEG](img/API-prediction-NEG.png)
 
 ## 6) Prueba de errores (API) - Robustez
 
@@ -167,6 +180,8 @@ Herramientas recomendadas:
     }
 ```
 
+![PruebaAPIShort](img/API-short.png)
+
 ### 6.2 Only Symbols (400)
 **POST** `${API_BASE}/sentiment`
 
@@ -189,6 +204,8 @@ Herramientas recomendadas:
     }
 ```
 
+![PruebaAPISymbols](img/API-Symbols.png)
+
 ### 6.3 DS Down/Disconnected (503)
 **POST** `${API_BASE}/sentiment`
 
@@ -208,3 +225,5 @@ Herramientas recomendadas:
 	    "details": {}
     }
 ```
+
+![PruebaAPIDown](img/API-Down.png)
