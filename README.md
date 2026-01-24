@@ -113,7 +113,7 @@ cd backend
 ```JSON
   { 
     "label": 1,
-    "negativeProbability": 0.23,
+    "negativeProbability": 0.03,
     "positiveProbability": 0.97, 
     "prediction": "positive",
     "probability": 0.97 

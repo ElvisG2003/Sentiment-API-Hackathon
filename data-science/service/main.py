@@ -152,9 +152,28 @@ def predict(req: PredictRequest):
         # Probamos que proba devuevla los indices correctos
         raise HTTPException(status_code=422, detail="Text is empty after cleaning. Please provide valid text.")
     
+    # Si por cualquier motivo cambia el orden de las clases, nos aseguramos de obtener la probabilidad correcta
     try:
-        # Si cualquier error es dado, devolvemos 500 pero sin exponer datos
-        proba_pos = MODEL.predict_proba([cleaned])[0][1]
+        # Probabilidad de la clase positiva
+        proba_lis = MODEL.predict_proba([cleaned])
+        # Aseguramos que las clases esten definidas
+        classes = getattr(MODEL, "classes_",None)
+        if classes is None:
+            raise RuntimeError("El modelo no tiene classes_ .No se a podido mapear")
+        
+        if hasattr (classes,"tolist"):
+            classes = classes.tolist()
+        else:
+            classes = list(classes)
+
+        if 1 not in classes:
+            raise RuntimeError(f"El modelo no tiene clases positivas `1`. classes_={classes}")    
+        
+        idx_pos = classes.index(1) # Indice de la clase positiva
+
+        proba_fila = proba_lis[0] # Probabilidad de la clase positiva
+
+        proba_pos = float(proba_fila[idx_pos])
     except Exception as e:
         logger.exception("Error during model prediction")
         raise HTTPException(status_code=500, detail=f"Error during prediction.")
