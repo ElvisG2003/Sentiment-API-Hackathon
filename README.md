@@ -128,6 +128,12 @@ cd backend
 
 ---
 
+## Testing 
+- Para la demo y validación rapida del sistema (DS+API+WEB-UI), seguir en plan en:
+- `docs/testing.md`
+
+---
+
 ##  Equipos y roles 
 
 | Nombre           | Rol principal        | Tecnologías                              |

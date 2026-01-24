@@ -25,6 +25,13 @@ document.addEventListener("DOMContentLoaded", () => {
    */
   const SENTIMENT_URL = `${API_BASE_URL}/sentiment`;
 
+  /*
+    * Se define para el Service status 
+   */
+  const HEALTH_DEPS_URL = `${API_BASE_URL}/sentiment/health/deps`;
+  const DEBUG = new URLSearchParams(window.location.search).has("debug");
+
+
   /*Funcion para obtener elementos con el ID */
   const $ = (id) => document.getElementById(id);
 
@@ -187,9 +194,12 @@ document.addEventListener("DOMContentLoaded", () => {
     
   
     // Logs para debug
-    console.log("prediction:", prediction);
-    console.log("sessionStats:", sessionStats);
-    console.log("pieData:", chartCount.data.datasets[0].data);
+    if (DEBUG){
+      console.log("prediction:", prediction);
+      console.log("sessionStats:", sessionStats);
+      console.log("pieData:", chartCount.data.datasets[0].data);
+    }
+
   }
 
   function resetSession() {
@@ -297,6 +307,45 @@ document.addEventListener("DOMContentLoaded", () => {
       history = [];
     }
   }
+  
+  /**
+   * Se crea la funcion del boton para el Service status
+   * Dependiendo del estado del DS informara como esta el programa
+   */
+  async function refreshServiceStatus() {
+    const el = document.getElementById("svc-status");
+    if (!el) return;
+      try {
+        const resp = await fetch(HEALTH_DEPS_URL);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+        const data = await resp.json();
+        const backendOk = (data.backend === "ok");
+        const dsOk = (data.ds?.status === "ok");
+
+        if (backendOk && dsOk) {
+          el.className = "badge bg-success";
+          el.textContent = "Servicios: Backend OK | DS OK";
+        } else if (backendOk && !dsOk) {
+          el.className = "badge bg-warning text-dark";
+          el.textContent = "Servicios: Backend OK | DS DOWN (demo controlado)";
+        } else {
+          el.className = "badge bg-danger";
+          el.textContent = "Servicios: Backend DOWN";
+        }
+
+        if (DEBUG) console.log("health/deps:", data);
+      } catch (e) {
+        el.className = "badge bg-danger";
+        el.textContent = "Servicios: no se pudo verificar (Backend DOWN)";
+        if (DEBUG) console.log("health/deps error:", e);
+      }
+}
+
+    // para cargar el Service Status:
+    refreshServiceStatus();
+    setInterval(refreshServiceStatus, 5000);
+
     // Guarda el historial en localStorage
   function saveHistory() {
     localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
@@ -415,7 +464,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadHistory();
   renderHistory();
 
-  console.log("✅ UI lista. Esperando análisis...");
+  if (DEBUG)console.log("✅ UI lista. Esperando análisis...");
 
   // ======================================================
   // CARGA DE CSV + RENDER EN DATATABLES (DataTables 2.x)
@@ -561,13 +610,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Validación rápida de contenido
         if (!datos.length) {
-          console.warn("No hay datos en el archivo CSV");
+          if (DEBUG) console.warn("No hay datos en el archivo CSV");
           return;
         }
 
         // Obtiene columnas desde meta.fields si existe, sino desde el primer objeto
         const columnas = results?.meta?.fields ?? Object.keys(datos[0] || {});
-        console.log(`CSV cargado: ${datos.length} filas`, { columnas });
+        if (DEBUG) console.log(`CSV cargado: ${datos.length} filas`, { columnas });
 
         // Renderiza o actualiza la tabla
         renderCsvInDataTable(datos, columnas);

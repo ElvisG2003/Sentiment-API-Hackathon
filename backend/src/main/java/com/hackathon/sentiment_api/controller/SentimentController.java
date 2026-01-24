@@ -57,8 +57,8 @@ public class SentimentController {
     /*Se crea GET /health
     * Es un endpoint simple de salud*/
     @GetMapping("/health")
-    public ResponseEntity<String> health() {
-        return ResponseEntity.ok("OK");
+    public Map<String, String> health() {
+        return Map.of("Status","OK");
     }
     /* Se crea GET /health/deps
     * Endpoint de salud extendido que chequea dependencias
