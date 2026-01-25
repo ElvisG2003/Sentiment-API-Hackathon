@@ -1694,7 +1694,7 @@
 				 */
 				var fetchData = function (data, type, src) {
 					var arrayNotation, funcNotation, out, innerSrc;
-		
+
 					if ( src !== "" ) {
 						var a = _fnSplitObjNotation( src );
 		
@@ -1794,7 +1794,6 @@
 	
 		unique: _unique
 	};
-	
 	
 	
 	/**

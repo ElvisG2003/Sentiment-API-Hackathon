@@ -171,6 +171,68 @@ document.addEventListener("DOMContentLoaded", () => {
     $("result-card")?.classList.remove("d-none");
   }
 
+  /**
+	 * Agregamos esto para  manejar porcentajes y renderizar
+	 */
+	function updateKpis(history){
+		const total = history.length;
+
+    const elTotal = $("kpi-total");
+    const elPosRate = $("kpi-posrate");
+    const elAvgPos = $("kpi-avgpos");
+    const elLatency = $("kpi-latency")
+
+    if (!elTotal || !elPosRate || !elAvgPos) return;
+		document.getElementById("kpi-total").textContent = String(total);
+		
+		if (total === 0){
+			elPosRate.textContent = "0%";
+			elAvgPos.textContent = "0%";
+      if (elLatency) elLatency.textContent ="-";
+			return;
+		}
+		// Guardamos en cada item label y positiveProb
+		const positives = history.filter(x => x.prediction === "positive").length;
+  	const posRate = Math.round((positives / total) * 100);
+
+		const avgPos = Math.round(
+    		(history.reduce((acc, x) => acc + (x.positiveProbability ?? x.probability ?? 0), 0) / total) * 100
+  	);
+
+  	elPosRate.textContent = `${posRate}%`;
+  	elAvgPos.textContent = `${avgPos}%`;
+
+    if (elLatency){
+      const lastMs = history[0]?.latencyMs;
+      elLatency.textContent = Number.isFinite(lastMs)? `${Math.round(lastMs)} ms` : "-";
+    }
+	}
+
+  function recalcSessionStatsFromHistory() {
+  sessionStats.positive = 0;
+  sessionStats.negative = 0;
+
+  for (const item of history) {
+    if (item.prediction === "positive") sessionStats.positive += 1;
+    else if (item.prediction === "negative") sessionStats.negative += 1;
+  }
+}
+
+  function syncChartsFromHistory() {
+    // Barra: última prob positiva (si existe)
+    const lastPos = clamp01(history[0]?.positiveProbability ?? 0);
+    const pct = Math.round(lastPos * 1000) / 10; // 1 decimal
+
+    chartProb.data.datasets[0].data = [pct];
+    chartProb.update();
+
+    // Pie: distribución según historial actual (máx 20)
+    recalcSessionStatsFromHistory();
+    chartCount.data.datasets[0].data = [sessionStats.positive, sessionStats.negative];
+    chartCount.update();
+  }
+	
+
   function updateCharts(probability, prediction) {
     // Actualiza el gráfico 1 de probabilidad
     const pct= Math.round(probability * 1000) / 10; // 0..100 con 1 decimal
@@ -235,6 +297,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       // Llamada al backend
+      const t0 = performance.now(); // Medir las respuestas para la UI
       const resp = await fetch(SENTIMENT_URL, {
         method: "POST",
         headers: {
@@ -267,6 +330,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Si fue OK, parseamos JSON del response
       const data = await resp.json();
+
+      const ms = Math.round(performance.now() - t0);
       
       // Obtener probabilidad positiva (adaptarse a ambas APIs)
       const pos = (typeof data.positiveProbability === "number") // -> Nueva API
@@ -279,10 +344,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Esperado: { prediction: "positive"|"negative", probability: number }
       showResult(data.prediction, pos, neg);
-      addToHistory(text, data.prediction, pos);
+
+      addToHistory(text, data.prediction, pos, ms);
       renderHistory();
 
-      updateCharts(pos, data.prediction);
+      updateKpis(history);
+      syncChartsFromHistory();
     } catch (e) {
       showError(e.message ?? "Error desconocido");
     } finally {
@@ -353,7 +420,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Registro de Historial 
 
-  function addToHistory(text, prediction, posprobability){
+  function addToHistory(text, prediction, posprobability, latencyMs){
     const pos = clamp01(posprobability);
     const neg = 1 - pos;
 
@@ -363,6 +430,7 @@ document.addEventListener("DOMContentLoaded", () => {
       prediction: String(prediction ?? ""),
       positiveProbability: pos,
       negativeProbability: neg,
+      latencyMs: Number.isFinite(latencyMs) ? latencyMs : null,
     };
 
     history.unshift(item); // agrega al inicio
@@ -444,6 +512,8 @@ document.addEventListener("DOMContentLoaded", () => {
     history = [];
     saveHistory();
     renderHistory();
+    updateKpis(history);
+    syncChartsFromHistory();
   }
 
   resetBtn?.addEventListener("click", resetSession);
@@ -463,6 +533,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   loadHistory();
   renderHistory();
+  updateKpis(history);
+  syncChartsFromHistory();
 
   if (DEBUG)console.log("✅ UI lista. Esperando análisis...");
 

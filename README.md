@@ -17,7 +17,7 @@ Construir una API capaz de:
 ## Que se hace
 Se usan 3 componentes principales para crear un sistema de clasificacion binaria:
 
-- **Web UI** (frontend estático) -> `web-ui/
+- **Web UI** (frontend estático) -> `web-ui/`
 - **Backend** (Spring Boot, API publica) -> `backend/`
 - **Data Science** (FastAPI + modelo sciki-learn) -> `data-science/service/`
 

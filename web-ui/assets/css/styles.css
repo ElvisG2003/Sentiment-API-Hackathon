@@ -6,21 +6,134 @@
         user-select: none;
     }
 
-    @media (min-width: 768px) {
+@media (min-width: 768px) {
         .bd-placeholder-img-lg {
         font-size: 3.5rem;
         }
-    }
-    .btn-morado {
-    background-color: #6f42c1; /* Un tono morado común */
-    border-color: #6f42c1;
-    color: white; /* Color de texto blanco para contraste */
-    }
-    .btn-morado:hover {
-          background-color: #5a3e9f; /* Un tono más oscuro al pasar el ratón */
-        border-color: #5a3e9f;
-    }
+}
 
-    .chart-container {
-      height: 300px; /* Altura fija para el contenedor del gráfico */
-    }
+.btn-morado {
+  background-color: #6f42c1; /* Un tono morado común */
+  border-color: #6f42c1;
+  color: white; /* Color de texto blanco para contraste */
+  }
+
+.btn-morado:hover {
+    background-color: #5a3e9f; /* Un tono más oscuro al pasar el ratón */
+    border-color: #5a3e9f;
+}
+
+.chart-container {
+  height: 300px; /* Altura fija para el contenedor del gráfico */
+  }
+/* Nav bar fija para no tapar contenido*/
+body {
+  padding-top: 72px;
+}
+
+/* Header interno */
+.app-header {
+  padding: 0.25rem 0;
+}
+
+/* Cards: look más “producto” */
+.card {
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+}
+
+/* Card interna*/
+.card-inner {
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* Charts: asegurar alto consistente */
+.chart-container {
+  position: relative;
+  height: 260px;
+}
+
+/* Resultado: orden limpio */
+.result-grid {
+  display: grid;
+  gap: 0.6rem;
+}
+
+/* Textarea: permite redimensionar vertical */
+textarea.form-control {
+  resize: vertical;
+}
+
+.app-main { 
+  max-width: 1140px; 
+}
+
+.chart-container {
+  position: relative; 
+  height: 260px;
+}
+
+.result-grid {
+  display: grid; gap: 0.6rem; 
+}
+.card-inner {
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.06); 
+  background: rgba(255,255,255,0.02); 
+}
+
+.card.shadow-sm{
+  box-shadow: 0 .5rem 1.25rem rgba(0, 0, 0, 0.25);
+}
+
+.result-panel{
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.result-label{
+  font-size: .8rem;
+  color: rgba(255,255,255,0.65);
+}
+
+.result-value{
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: .2px;
+}
+
+#history-body td:nth-child(2){
+  max-width: 240px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dataTables_wrapper .dataTables_filter input,
+.dataTables_wrapper .dataTables_length select{
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: inherit;
+}
+
+.kpi-card{
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+  border-radius: 12px;
+  padding: 10px 12px;
+  height: 100%;
+}
+
+.kpi-label{
+  font-size: .78rem;
+  color: rgba(255,255,255,0.65);
+}
+
+.kpi-value{
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin-top: 2px;
+}

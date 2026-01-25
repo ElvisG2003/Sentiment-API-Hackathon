@@ -2,9 +2,24 @@
 
 Este documento busca definir el contrato entre 2 APIs:
 
-- Web UI -> Backend(Spring Boot)
-- Backend -> Model Service (FastAPI)
+- **Web UI** -> **Backend**(Spring Boot)
+- **Backend** -> **Model Service** (FastAPI)
 
+---
+
+## Convenciones (importante)
+
+### Semántica de `probability`
+En **todo el sistema** (DS y Backend):
+- `probability` = **Probabilidad Positiva**
+- `positiveProbability` == `probability`
+- `negativeProbability` == 1 -`probability`
+
+### Content-Type
+- Requests: `application/json`
+- Responses: `application/json`
+
+---
 
 ## 1) BACKEND
 
@@ -18,10 +33,12 @@ Este documento busca definir el contrato entre 2 APIs:
 **GET** `/sentiment/health`
 
 #### Response 200 (text)
-{
-  OK
-}
 
+```json
+{
+  "Status": "OK"
+}
+```
 
 ---
 
@@ -125,6 +142,36 @@ Este documento busca definir el contrato entre 2 APIs:
 
 #### 400 Validation error
 - Cuando falla `@Valid` en `SentimentRequest`. 
+- Ejemplo: Texto corto o vacío
+- Tenemos error especifico:
+
+```json
+{
+  "timestamp": "2026-01-24T12:40:03.942089100-03:00",
+	"status": 400,
+	"error": "Validation error",
+	"path": "/sentiment",
+	"details": {
+		"text": "El texto debe tener al menos 3 caracteres"
+	}
+}
+```
+
+#### 400 Invalid text 
+- Cuando el texto trae emojis o simbolos 
+- Tenemos un error especifico para este caso:
+
+```json
+{
+  "timestamp": "2026-01-24T12:40:31.620880300-03:00",
+	"status": 400,
+	"error": "El texto debe contener al menos una letra o un número.",
+	"path": "/sentiment",
+	"details": {
+		"text": "El texto debe contener al menos una letra o un número."
+  }
+}
+```
 
 #### 400 Malformed JSON request
 - Cuando el JSON viene roto 
@@ -134,7 +181,17 @@ Este documento busca definir el contrato entre 2 APIs:
 
 #### 500 internal server error
 - Error inesperado (no exponemos datos sensibles)
+- Error especifico:
 
+```json
+{
+  "timestamp": "2026-01-24T09:58:23.342304200-03:00",
+	"status": 503,
+	"error": "Error al conectar con el servicio DS, verifique que DS este conectado.",
+	"path": "/sentiment",
+	"details": {}
+}
+```
 
 ## 2) Data Science (FastAPI)
 
@@ -192,9 +249,12 @@ Este documento busca definir el contrato entre 2 APIs:
 
 ```JSON
 {
-  "status": "ok"
+  "Status": "ok"
 }
 ```
+## Errores de DS se ven en profundidad en:
+- `docs/testing.md`
+
 * 422: texto inválido 
 * 503: modelo aún no cargado
 * 500: error durante la prediccion
