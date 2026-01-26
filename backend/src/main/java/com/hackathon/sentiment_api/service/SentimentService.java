@@ -30,7 +30,7 @@ public class SentimentService {
     public SentimentService(SentimentModelClient modelClient) {
         this.modelClient = modelClient;
     }
-
+    /* 
     public SentimentResponse predict(String text) {
 
         log.debug("Analizando texto");
@@ -71,8 +71,44 @@ public class SentimentService {
 
         return new SentimentResponse(prediction, result.probability(), result.label());
     }
+        Antiguo Response 
+    */
+    // Antiguo Response simplificado por compatibilidad
+    public SentimentResponse predict(String text){
+        return predict(text,null);
+    }    
 
+    public SentimentResponse predict(String text, String model) {
 
+        log.debug("Analizando texto");
+
+        String normalized = normalize(text);
+
+        if (normalized.isBlank()) {
+            throw new InvalidTextException("El texto de entrada no puede estar vacio");
+        }
+
+        boolean hasLetterOrDigit = normalized.codePoints().anyMatch(Character::isLetterOrDigit);
+        if (!hasLetterOrDigit) {
+            log.warn("Texto recibido inválido");
+            throw new InvalidTextException("El texto debe contener al menos una letra o un número.");
+        }
+
+        SentimentModelClient.ModelResult result;
+        try {
+            result = modelClient.predict(normalized, model);
+        } catch (InvalidTextException ex) {
+            throw ex;
+        }catch (ModelServiceExceptionMesagge ex) {
+            throw ex;
+        } catch (Exception ex) {
+            log.error("Error al llamar al servicio del modelo DS", ex);
+            throw new ModelServiceExceptionMesagge("Error al comunicarse con el servicio, informar o intentar mas tarde.", ex);
+        }
+
+    String prediction = mapLabelToPrediction(result.label());
+    return new SentimentResponse(prediction, result.probability(), result.label());
+}
 
     private String normalize(String text) {
         return (text == null) ? "" : text.trim();

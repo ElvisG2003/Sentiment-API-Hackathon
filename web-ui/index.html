@@ -59,6 +59,14 @@
 
           <textarea id="text-input" class="form-control" rows="3" placeholder="Escribe un comentario (mínimo 3 caracteres y en ingles)"></textarea>
 
+          <label for="model-select" class="form-label mt-3">Modelo</label>
+          <select id="model-select" class="form-select">
+            <option value="">Automático</option>
+            <option value="logreg">Logistic Regression</option>
+            <option value="naive_bayes">Naive Bayes</option>
+            <option value="svm">SVM</option>
+          </select>
+
           <div class="d-flex gap-2 align-items-center mt-3">
             <button id="analyze-btn" class="btn btn-primary" type="button">Analizar</button>
             <button id="reset-btn" class="btn btn-outline-secondary" type="button">Resetear Sesión</button>
@@ -80,11 +88,11 @@
                   <div class="result-label">Prob. +</div>
                   <div class="result-value" id="result-probability">-</div>
                 </div> 
-              </div>
 
-              <div class="col-6">
-                <div class="result-label">Prob. -</div>
-                <div class="result-value" id="result-negprobability">-</div>
+                <div class="col-6">
+                  <div class="result-label">Prob. -</div>
+                  <div class="result-value" id="result-negprobability">-</div>
+                </div>
               </div>
 
               <div class="text-muted small mt-2">

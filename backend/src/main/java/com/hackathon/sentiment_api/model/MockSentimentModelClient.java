@@ -15,9 +15,14 @@ public class MockSentimentModelClient implements SentimentModelClient{
             List.of("bad","terrible","awful","hate", "worst");
 
     @Override
-    public ModelResult predict(String text){
-
+    public ModelResult predict(String text, String model){
         String lower = text.toLowerCase();
+        boolean isNegative = NEGATIVE_KEYWORDS.stream().anyMatch(lower::contains);
+
+        if (isNegative) return new ModelResult(0, 0.85);
+        return new ModelResult(1,0.85);
+        // Antiguo Modelo
+        /*String lower = text.toLowerCase();
 
         boolean isNegative = NEGATIVE_KEYWORDS.stream().anyMatch(lower::contains);
 
@@ -25,6 +30,6 @@ public class MockSentimentModelClient implements SentimentModelClient{
             return new ModelResult(0, 0.85);
         }
 
-        return new ModelResult(1, 0.85);
+        return new ModelResult(1, 0.85);*/
     }
 }

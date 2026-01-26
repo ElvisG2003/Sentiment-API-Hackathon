@@ -1,0 +1,19 @@
+{
+  "model_path": "sentiment_pipeline_nb.joblib",
+  "threshold": 0.4,
+  "labels": {
+    "positive": 1,
+    "neutral_or_negative": 0
+  },
+  "pipeline": {
+    "tfidf": {
+      "max_features": 5000,
+      "ngram_range": [
+        1,
+        2
+      ],
+      "stop_words": "english"
+    },
+    "naive_bayes": "MultinomialNB"
+  }
+}

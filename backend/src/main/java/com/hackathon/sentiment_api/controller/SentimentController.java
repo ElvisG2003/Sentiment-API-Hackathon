@@ -50,7 +50,7 @@ public class SentimentController {
     @PostMapping
     public ResponseEntity<SentimentResponse> predict(@RequestBody @Valid SentimentRequest request) {
         log.debug("POST /sentiment recibido");
-        SentimentResponse response = this.sentimentService.predict(request.getText());
+        SentimentResponse response = this.sentimentService.predict(request.getText(), request.getModel());
         return ResponseEntity.ok(response);
     }
 

@@ -1,0 +1,8 @@
+{
+  "default": "logreg",
+  "models": {
+    "logreg": { "config": "model_config.json", "description": "TF-IDF + Logistic Regression" },
+    "naive_bayes": { "config": "model_config_nb.json", "description": "TF-IDF + MultinomialNB" },
+    "svm": { "config": "model_config_svm.json", "description": "TF-IDF + SVC(probability=True)" }
+  }
+}

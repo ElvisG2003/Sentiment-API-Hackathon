@@ -5,7 +5,11 @@ public interface SentimentModelClient {
 
     /*predict es la entrada de texto que se analiza
     * label(0/1) + prohability*/
-    ModelResult predict(String text);
+    default ModelResult predict(String text){
+        return predict(text,null);
+    }
+
+    ModelResult predict(String text, String model);
 
     //Label es un numero entero para los sentimientos trabajados por DS
     //probability: confianza del modelo para la clase 0.0 y 1.0

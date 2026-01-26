@@ -63,7 +63,7 @@ public class FastApiSentimentModelClient implements SentimentModelClient {
 
 // Implementamos el metodo predict definido en la interfaz
 @Override
-public ModelResult predict(String text){
+public ModelResult predict(String text, String model){
     long t0 = System.nanoTime();
     // Hacemos la llamada al servicio FastAPI
     try {
@@ -71,9 +71,10 @@ public ModelResult predict(String text){
         DsPredictResponse resp = restClient.post() // Post Request
             .uri("/predict") // path del endpoint
             .contentType(MediaType.APPLICATION_JSON) // Enviamos JSON
-            .body(new DsPredictRequest(text)) // body: {"text": "texto a analizar"}
+            .body(new DsPredictRequest(text, model)) // body: {"text": "texto a analizar"}
             .retrieve() // Ejecutamos la llamada
             .body(DsPredictResponse.class); // Parseamos la respuesta a DsPredictResponse
+
 
         // si no hay respuesta
         if (resp == null){
@@ -85,6 +86,11 @@ public ModelResult predict(String text){
     } catch (RestClientResponseException ex) {
         int statusCode = ex.getStatusCode().value();// Codigo de estado HTTP
         String detail = extractDetail(ex.getResponseBodyAsString());
+
+        if (statusCode == 404) {
+            String msg = (detail != null) ? detail :"Modelo desconocido";
+            throw new InvalidTextException(msg);
+        }
 
         // Manejo de errores basado en el código de estado HTTP
         if (statusCode == 422){
@@ -113,7 +119,7 @@ public ModelResult predict(String text){
     }
 }
 
-    private record DsPredictRequest(String text){}
+    private record DsPredictRequest(String text, String model){}
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     private record DsPredictResponse(int label, double probability){}

@@ -47,6 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Elementos del form de análisis
   const textInput = $("text-input"); // -> textarea
+  const modelSelect = $("model-select");// -> seleccion de modelo
   const analyzeBtn = $("analyze-btn");  // -> botón Analizar
   const resetBtn = $("reset-btn");  // -> botón Resetear Sesión
 
@@ -298,12 +299,15 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       // Llamada al backend
       const t0 = performance.now(); // Medir las respuestas para la UI
+      const model = (modelSelect?.value || "").trim();
+      const payload = model ? { text, model } : { text };
+
+      if (DEBUG) console.log("payload:", payload);
+
       const resp = await fetch(SENTIMENT_URL, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ text }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
 
       // Si hubo un error HTTP, lo procesamos

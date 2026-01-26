@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public class SentimentRequest {
+    private String model;
+
     private @NotBlank(
             message = "El texto no puede estar vacio"
     ) @Size(
@@ -25,4 +27,13 @@ public class SentimentRequest {
     public void setText(String text) {
         this.text = text;
     }
+
+    public String getModel(){
+        return model;
+    }
+
+    public void setModel(String model){
+        this.model = model;
+    }
+
 }
